@@ -128,7 +128,7 @@
     },
     "button": {
       "share_tank": {
-        "name": "Share tank settings"
+        "name": "Share tank settings / propose curve"
       }
     }
   },
@@ -157,7 +157,7 @@
     },
     "share_tank": {
       "name": "Share settings",
-      "description": "Creates a notification with a link to a pre-filled GitHub issue (custom tank, learned curve). Nothing is sent automatically; limited to once per 24 h and only for tanks that have learned enough.",
+      "description": "Creates a notification with a link to a pre-filled GitHub issue (a custom tank to add to the catalogue, or the learned curve of a known tank to update). Nothing is sent automatically; limited to once per 24 h and only for tanks that have learned enough.",
       "fields": {
         "config_entry": {
           "name": "Tank",

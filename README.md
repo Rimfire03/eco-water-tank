@@ -89,15 +89,16 @@ and the **catchment area** (m², roof) in the sensors step. 1 mm on 1 m² = 1 L.
 Limits: a mains top-up (tank gains more than twice the rain potential) is ignored by the learning;
 slow level steps (1 % of capacity) make the efficiency converge over several rains, not one.
 
-## Share your custom tank
+## Share your tank / propose a curve update
 
-Custom tank with a well-learned curve? The **Share tank settings** button (or the `eco_water_tank.share_tank`
-action) creates a notification with a link to a pre-filled GitHub issue (capacity, dimensions, learned curve)
-so the model can join the catalogue in a next release. Nothing is sent automatically: you review and submit
+Custom tank to add to the catalogue, or a known tank whose learned curve differs from the catalogue?
+The **Share tank settings / propose curve** button (or the `eco_water_tank.share_tank` action) creates a
+notification with a link to a pre-filled GitHub issue (model, capacity, shape and dimensions, learned curve,
+samples per bin) so it can be used in a next release. Nothing is sent automatically: you review and submit
 the issue yourself, with your GitHub account.
 
-Anti-spam: custom tanks only, only after enough learning (about one full fill/drain, or a calibration),
-once per 24 h per tank (kept across restarts), and the issue form requires all fields.
+Anti-spam: only after enough learning (about one full fill/drain, or a calibration),
+once per 24 h per tank (kept across restarts), and the issue form requires its fields.
 
 ## Energy dashboard
 

@@ -1,4 +1,4 @@
-"""Button: share a custom tank's settings (custom tanks only)."""
+"""Button: share the tank's settings / learned curve."""
 
 from __future__ import annotations
 
@@ -8,16 +8,14 @@ from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import CONF_MODEL, DOMAIN
-from .models import CUSTOM
+from .const import DOMAIN
 from .sensor import device_info
 
 
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
-    if (entry.options or entry.data).get(CONF_MODEL, CUSTOM) == CUSTOM:
-        async_add_entities([ShareButton(entry)])
+    async_add_entities([ShareButton(entry)])
 
 
 class ShareButton(ButtonEntity):

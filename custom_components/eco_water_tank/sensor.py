@@ -139,16 +139,16 @@ class TankModel:
         self.store.async_delay_save(self.persisted, 60)
 
     async def share(self) -> dict:
-        """Notify a pre-filled GitHub issue link + the settings (custom tanks, rate limited)."""
+        """Notify a pre-filled GitHub issue link + the settings (any tank, rate limited)."""
         cfg = self.entry.options or self.entry.data
-        if cfg.get(CONF_MODEL, CUSTOM) != CUSTOM:
-            raise ServiceValidationError("Only custom tanks can be shared")
+        spec = MODELS.get(cfg.get(CONF_MODEL))
         now = time.time()
         reason = refusal(now, self.last_share, sum(self.learner.sxx))
         if reason:
             raise ServiceValidationError(reason)
         payload = {
-            "name": self.entry.title,
+            "name": spec.label if spec else self.entry.title,
+            "model": cfg.get(CONF_MODEL, CUSTOM),
             "capacity": cfg[CONF_CAPACITY],
             **{k: cfg[k] for k in (CONF_SHAPE, CONF_WIDTH, CONF_LENGTH, CONF_DIAMETER, CONF_HEIGHT) if cfg.get(k)},
             "curve": self.learner.curve(),

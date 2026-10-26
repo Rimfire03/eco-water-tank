@@ -128,7 +128,7 @@
     },
     "button": {
       "share_tank": {
-        "name": "Partager les réglages de la cuve"
+        "name": "Partager les réglages de la cuve / proposer la courbe"
       }
     }
   },
@@ -157,7 +157,7 @@
     },
     "share_tank": {
       "name": "Partager les réglages",
-      "description": "Crée une notification avec un lien vers une demande GitHub pré-remplie (cuve personnalisée, courbe apprise). Rien n'est envoyé automatiquement ; limité à une fois par 24 h et réservé aux cuves déjà apprises.",
+      "description": "Crée une notification avec un lien vers une demande GitHub pré-remplie (cuve personnalisée à ajouter au catalogue, ou courbe apprise d'une cuve connue à mettre à jour). Rien n'est envoyé automatiquement ; limité à une fois par 24 h et réservé aux cuves déjà apprises.",
       "fields": {
         "config_entry": {
           "name": "Cuve",
