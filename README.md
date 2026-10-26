@@ -76,6 +76,12 @@ Without an inlet meter: `in = Δvolume + Δoutlet`, counted only when above 1 % 
 so sensor noise never accumulates. Unmetered losses (leaks) are not subtracted from the total.
 Without an outlet meter either, only level rises are counted (draws are invisible).
 
+## Releases
+
+Semantic versioning. To release: bump `version` in `custom_components/eco_water_tank/manifest.json`,
+commit, then push the matching tag (`git tag vX.Y.Z && git push origin vX.Y.Z`).
+The Release workflow checks tag = manifest version and publishes the GitHub release; HACS offers it as an update.
+
 ## Support
 
 If you find it useful, you can support the project:
