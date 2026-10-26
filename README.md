@@ -33,6 +33,13 @@ Settings → Devices & services → Add integration → **Eco Water Tank**.
 | Inlet meter | no | Cumulative water meter. If absent, water in is derived |
 | Outlet meter | no | Cumulative water meter |
 
+### Analog water meters
+
+No smart meter? [AI-on-the-edge-device](https://github.com/jomjol/AI-on-the-edge-device) is recommended:
+an ESP32-CAM reads an analog meter (dials or digits) and publishes the value to Home Assistant.
+Use its value as the inlet or outlet meter (it must be a cumulative total with device class `water`;
+set the class and `total_increasing` on the sensor if the integration does not).
+
 ## Tank models
 
 Plasteau ECOCITER Habitat (catalogue Plasteau, édition 0526):
