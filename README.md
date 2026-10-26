@@ -1,10 +1,12 @@
-# Eco Water Tank
+# 💧 Eco Water Tank
 
+[![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
 [![GitHub release](https://img.shields.io/github/v/release/Rimfire03/eco-water-tank?include_prereleases)](https://github.com/Rimfire03/eco-water-tank/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Donate-orange.svg?logo=buy-me-a-coffee&logoColor=white)](https://buymeacoffee.com/slide598b)
 
-Home Assistant custom integration (HACS): model a water tank, a bit like the battery storage of the Energy dashboard.
+> A water tank for **Home Assistant** (level, inlet and outlet meters, rain gauge), shown in the Energy dashboard like a battery storage, ready for **HACS**.  
+> *Une cuve d'eau pour **Home Assistant** (niveau, compteurs d'entrée et de sortie, pluviomètre), affichée dans le dashboard Énergie comme un stockage batterie, prête pour **HACS**.*
 
 ---
 
