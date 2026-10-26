@@ -3,6 +3,7 @@
   "name": "Eco Water Tank",
   "codeowners": ["@Rimfire03"],
   "config_flow": true,
+  "dependencies": ["recorder"],
   "documentation": "https://github.com/Rimfire03/eco-water-tank",
   "integration_type": "service",
   "iot_class": "calculated",
