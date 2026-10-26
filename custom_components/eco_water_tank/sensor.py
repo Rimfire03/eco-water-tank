@@ -188,6 +188,15 @@ class TankModel:
         _LOGGER.info("History import: %s statistic rows", count)
         return count
 
+    async def mark_level(self, full: bool) -> None:
+        """Tell the tank it is full (capacity at the current reading) or empty (0 L)."""
+        p = self._percent_state()
+        if p is not None and p <= 0 and not full:
+            return  # already reads empty: curve is consistent, nothing to learn
+        await self.calibrate(self.capacity if full else 0.0, None)
+        if full and self.rain:
+            self.rain.pending = 0.0  # nothing left to arrive: the tank is full
+
     async def calibrate(self, volume: float | None, percent: float | None) -> None:
         """Teach the curve a manual truth: the tank holds `volume` L (or `percent` % of capacity) now."""
         if (volume is None) == (percent is None):

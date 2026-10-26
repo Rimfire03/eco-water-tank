@@ -138,6 +138,12 @@
     "button": {
       "share_tank": {
         "name": "Share tank settings / propose curve"
+      },
+      "mark_full": {
+        "name": "Tank full"
+      },
+      "mark_empty": {
+        "name": "Tank empty"
       }
     }
   },

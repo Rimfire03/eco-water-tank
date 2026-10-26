@@ -138,6 +138,12 @@
     "button": {
       "share_tank": {
         "name": "Partager les réglages de la cuve / proposer la courbe"
+      },
+      "mark_full": {
+        "name": "Cuve pleine"
+      },
+      "mark_empty": {
+        "name": "Cuve vide"
       }
     }
   },
