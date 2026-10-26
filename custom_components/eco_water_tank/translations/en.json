@@ -1,0 +1,37 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Water tank",
+        "description": "The level sensor is required. Without an inlet meter, water in is derived from the level and the outlet meter.",
+        "data": {
+          "name": "Name",
+          "capacity": "Tank capacity (L)",
+          "level_entity": "Level sensor (% or volume)",
+          "inlet_entity": "Inlet meter (optional)",
+          "outlet_entity": "Outlet meter (optional)"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "capacity": "Tank capacity (L)",
+          "level_entity": "Level sensor (% or volume)",
+          "inlet_entity": "Inlet meter (optional)",
+          "outlet_entity": "Outlet meter (optional)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "level": {"name": "Level"},
+      "volume": {"name": "Volume"},
+      "water_in": {"name": "Water in"},
+      "water_out": {"name": "Water out"}
+    }
+  }
+}

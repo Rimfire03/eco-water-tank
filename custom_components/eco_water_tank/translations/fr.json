@@ -1,0 +1,37 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Réservoir d'eau",
+        "description": "Le capteur de niveau est obligatoire. Sans compteur d'entrée, l'eau entrée est déduite du niveau et du compteur de sortie.",
+        "data": {
+          "name": "Nom",
+          "capacity": "Capacité de la cuve (L)",
+          "level_entity": "Capteur de niveau (% ou volume)",
+          "inlet_entity": "Compteur d'entrée (facultatif)",
+          "outlet_entity": "Compteur de sortie (facultatif)"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "capacity": "Capacité de la cuve (L)",
+          "level_entity": "Capteur de niveau (% ou volume)",
+          "inlet_entity": "Compteur d'entrée (facultatif)",
+          "outlet_entity": "Compteur de sortie (facultatif)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "level": {"name": "Niveau"},
+      "volume": {"name": "Volume"},
+      "water_in": {"name": "Eau entrée"},
+      "water_out": {"name": "Eau sortie"}
+    }
+  }
+}
