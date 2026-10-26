@@ -73,7 +73,6 @@ def _model_schema(d: dict[str, Any], with_name: bool) -> vol.Schema:
 
 
 def _size_schema(d: dict[str, Any]) -> vol.Schema:
-    capacity = None if d.get(CONF_CAPACITY) == _volume(d) else d.get(CONF_CAPACITY)
     shapes = [
         selector.SelectOptionDict(value=SHAPE_RECT, label="Rectangular / Rectangulaire"),
         selector.SelectOptionDict(value=SHAPE_ROUND, label="Circular / Circulaire"),
@@ -83,12 +82,14 @@ def _size_schema(d: dict[str, Any]) -> vol.Schema:
             vol.Required(CONF_SHAPE, default=d.get(CONF_SHAPE, SHAPE_RECT)): selector.SelectSelector(
                 selector.SelectSelectorConfig(options=shapes, mode=selector.SelectSelectorMode.DROPDOWN)
             ),
-            vol.Optional(
-                CONF_CAPACITY, description={"suggested_value": capacity} if capacity else {}
-            ): _number(10_000_000, "L"),
             **{vol.Optional(k, description=_suggest(d, k)): _number(100_000, "cm") for k in DIMS},
         }
     )
+
+
+def _capacity_schema(default: float | None) -> vol.Schema:
+    key = vol.Required(CONF_CAPACITY, default=default) if default else vol.Required(CONF_CAPACITY)
+    return vol.Schema({key: _number(10_000_000, "L")})
 
 
 def _sensors_schema(d: dict[str, Any]) -> vol.Schema:
@@ -141,20 +142,20 @@ class _Steps:
         return await self.async_step_sensors()
 
     async def async_step_size(self, user_input: dict[str, Any] | None = None):
-        errors: dict[str, str] = {}
+        if user_input is None:
+            return self.async_show_form(step_id="size", data_schema=_size_schema(self._data))
+        for k in (CONF_SHAPE, *DIMS):
+            self._data.pop(k, None)
+        self._data.update(user_input)
+        return await self.async_step_capacity()
+
+    async def async_step_capacity(self, user_input: dict[str, Any] | None = None):
+        """Capacity, prefilled with the volume computed from the dimensions (editable)."""
         if user_input is not None:
-            capacity = user_input.get(CONF_CAPACITY) or _volume(user_input)
-            if capacity is None:
-                errors[CONF_CAPACITY] = "capacity_required"
-            else:
-                for k in (CONF_CAPACITY, CONF_SHAPE, *DIMS):
-                    self._data.pop(k, None)
-                self._data.update(user_input)
-                self._data[CONF_CAPACITY] = capacity
-                return await self.async_step_sensors()
-        return self.async_show_form(
-            step_id="size", data_schema=_size_schema(user_input or self._data), errors=errors
-        )
+            self._data[CONF_CAPACITY] = user_input[CONF_CAPACITY]
+            return await self.async_step_sensors()
+        default = _volume(self._data) or self._data.get(CONF_CAPACITY)
+        return self.async_show_form(step_id="capacity", data_schema=_capacity_schema(default))
 
     async def async_step_sensors(self, user_input: dict[str, Any] | None = None):
         errors: dict[str, str] = {}

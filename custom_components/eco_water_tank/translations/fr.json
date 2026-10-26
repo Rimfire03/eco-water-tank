@@ -11,9 +11,8 @@
       },
       "size": {
         "title": "Taille de la cuve",
-        "description": "Saisis la capacité, ou les dimensions selon la forme : largeur × longueur × hauteur (rectangulaire) ou diamètre × hauteur (circulaire). La capacité saisie prime.",
+        "description": "Saisis la forme et les dimensions (rectangulaire : largeur × longueur × hauteur, circulaire : diamètre × hauteur). La capacité sera calculée à l'étape suivante ; laisse vide pour la saisir directement.",
         "data": {
-          "capacity": "Capacité (L)",
           "width": "Largeur (cm) - cuve rectangulaire",
           "length": "Longueur (cm) - cuve rectangulaire",
           "height": "Hauteur (cm)",
@@ -32,10 +31,16 @@
           "catchment_area": "Surface de collecte (m²)",
           "efficiency": "Rendement de collecte (%)"
         }
+      },
+      "capacity": {
+        "title": "Capacité",
+        "description": "Calculée à partir des dimensions saisies ; tu peux la corriger.",
+        "data": {
+          "capacity": "Capacité (L)"
+        }
       }
     },
     "error": {
-      "capacity_required": "Saisis une capacité, ou largeur, longueur et hauteur.",
       "area_required": "Saisis la surface de collecte du toit."
     }
   },
@@ -50,9 +55,8 @@
       },
       "size": {
         "title": "Taille de la cuve",
-        "description": "Saisis la capacité, ou les dimensions selon la forme : largeur × longueur × hauteur (rectangulaire) ou diamètre × hauteur (circulaire). La capacité saisie prime.",
+        "description": "Saisis la forme et les dimensions (rectangulaire : largeur × longueur × hauteur, circulaire : diamètre × hauteur). La capacité sera calculée à l'étape suivante ; laisse vide pour la saisir directement.",
         "data": {
-          "capacity": "Capacité (L)",
           "width": "Largeur (cm) - cuve rectangulaire",
           "length": "Longueur (cm) - cuve rectangulaire",
           "height": "Hauteur (cm)",
@@ -71,10 +75,16 @@
           "catchment_area": "Surface de collecte (m²)",
           "efficiency": "Rendement de collecte (%)"
         }
+      },
+      "capacity": {
+        "title": "Capacité",
+        "description": "Calculée à partir des dimensions saisies ; tu peux la corriger.",
+        "data": {
+          "capacity": "Capacité (L)"
+        }
       }
     },
     "error": {
-      "capacity_required": "Saisis une capacité, ou largeur, longueur et hauteur.",
       "area_required": "Saisis la surface de collecte du toit."
     }
   },

@@ -11,9 +11,8 @@
       },
       "size": {
         "title": "Tank size",
-        "description": "Enter the capacity, or the dimensions for the shape: width x length x height (rectangular) or diameter x height (circular). A typed capacity wins.",
+        "description": "Enter the shape and dimensions (rectangular: width x length x height, circular: diameter x height). The capacity is computed on the next step; leave empty to type it directly.",
         "data": {
-          "capacity": "Capacity (L)",
           "width": "Width (cm) - rectangular tank",
           "length": "Length (cm) - rectangular tank",
           "height": "Height (cm)",
@@ -32,10 +31,16 @@
           "catchment_area": "Catchment area (m²)",
           "efficiency": "Collection efficiency (%)"
         }
+      },
+      "capacity": {
+        "title": "Capacity",
+        "description": "Computed from the dimensions you entered; you can adjust it.",
+        "data": {
+          "capacity": "Capacity (L)"
+        }
       }
     },
     "error": {
-      "capacity_required": "Enter a capacity, or width, length and height.",
       "area_required": "Enter the roof catchment area."
     }
   },
@@ -50,9 +55,8 @@
       },
       "size": {
         "title": "Tank size",
-        "description": "Enter the capacity, or the dimensions for the shape: width x length x height (rectangular) or diameter x height (circular). A typed capacity wins.",
+        "description": "Enter the shape and dimensions (rectangular: width x length x height, circular: diameter x height). The capacity is computed on the next step; leave empty to type it directly.",
         "data": {
-          "capacity": "Capacity (L)",
           "width": "Width (cm) - rectangular tank",
           "length": "Length (cm) - rectangular tank",
           "height": "Height (cm)",
@@ -71,10 +75,16 @@
           "catchment_area": "Catchment area (m²)",
           "efficiency": "Collection efficiency (%)"
         }
+      },
+      "capacity": {
+        "title": "Capacity",
+        "description": "Computed from the dimensions you entered; you can adjust it.",
+        "data": {
+          "capacity": "Capacity (L)"
+        }
       }
     },
     "error": {
-      "capacity_required": "Enter a capacity, or width, length and height.",
       "area_required": "Enter the roof catchment area."
     }
   },
