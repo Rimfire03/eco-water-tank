@@ -30,6 +30,7 @@
     "sensor": {
       "level": {"name": "Niveau"},
       "volume": {"name": "Volume"},
+      "capacity": {"name": "Capacité apprise"},
       "water_in": {"name": "Eau entrée"},
       "water_out": {"name": "Eau sortie"}
     }

@@ -25,4 +25,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: python tests/test_tracker.py
+      - run: python tests/test_tracker.py && python tests/test_learner.py

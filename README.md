@@ -24,6 +24,17 @@ Settings → Devices & services → Add integration → **Eco Water Tank**.
 | Water in | L, `water`, `total_increasing` | Inlet meter, or derived: rise of volume + water drawn out |
 | Water out | L, `water`, `total_increasing` | Outlet meter, converted to L |
 
+## Learning level % → litres
+
+With a `%` level sensor and at least one meter, the integration learns the real curve:
+10 bins of litres-per-%, fitted from level changes (≥ 2 %) against the metered flow.
+A drop is learned from the outlet meter, a rise from the inlet meter (both: net flow).
+The entered capacity is the starting point (linear curve) and fades as data comes in,
+so non-linear tanks (horizontal cylinder…) and a wrong capacity are corrected over time.
+The result is shown by the diagnostic **Learned capacity** entity and used by **Volume**.
+The learned data is stored in `.storage/eco_water_tank.<entry_id>`.
+With a level sensor in litres, nothing is learned (the volume is already known).
+
 ## Energy dashboard
 
 Energy → Water consumption → add **Water out** (consumption drawn from the tank).
