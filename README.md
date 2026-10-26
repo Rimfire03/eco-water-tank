@@ -1,4 +1,4 @@
-# 💧 Eco Water Tank
+# Eco Water Tank
 
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
 [![GitHub release](https://img.shields.io/github/v/release/Rimfire03/eco-water-tank?include_prereleases)](https://github.com/Rimfire03/eco-water-tank/releases)
