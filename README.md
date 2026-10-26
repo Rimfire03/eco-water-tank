@@ -12,7 +12,7 @@ Settings → Devices & services → Add integration → **Eco Water Tank**.
 |---|---|---|
 | Tank model | yes | Catalogue below (volume known, nothing else to type), or *Custom* |
 | Capacity (L) | *Custom* only | Asked on a second step. Needed to convert % ↔ litres |
-| Width / length / height (cm) | *Custom* only | Instead of the capacity: capacity = width × length × height (rectangular tank). A typed capacity wins |
+| Shape + dimensions (cm) | *Custom* only | Instead of the capacity: rectangular = width × length × height, circular = π × (diameter ÷ 2)² × height. A typed capacity wins |
 | Level sensor | yes | `%` or any volume unit (L, m³, gal…) |
 | Inlet meter | no | Cumulative water meter. If absent, water in is derived |
 | Outlet meter | no | Cumulative water meter |
@@ -72,6 +72,21 @@ If the volume is off, tell the tank what it really holds now. Either:
 
 The current level reading and your value become a calibration point that weighs like 5 metered samples
 in the learned curve (stored, survives restarts). Repeat at other levels to refine. Needs a level sensor in `%` above 0.
+
+## Rainwater and rain gauge
+
+Fed by rain, no meter? Add a **cumulative rain gauge** (device class `precipitation`, mm or in)
+and the **catchment area** (m², roof) in the sensors step. 1 mm on 1 m² = 1 L.
+
+| Entity | Notes |
+|---|---|
+| Water in (estimated) | Without an inlet meter: rise of the volume + water drawn out (attribute `estimated: true`) |
+| Rainwater collected (estimated) | rain × area × efficiency, cumulative litres |
+| Overflow (estimated) | Collected rain the tank could not take while nearly full (≥ 90 %) |
+| Learned collection efficiency | Diagnostic %. Starts at the value you set (default 85 %), then learned from what the tank really gained while not nearly full |
+
+Limits: a mains top-up (tank gains more than twice the rain potential) is ignored by the learning;
+slow level steps (1 % of capacity) make the efficiency converge over several rains, not one.
 
 ## Share your custom tank
 

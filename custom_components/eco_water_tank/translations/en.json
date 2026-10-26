@@ -11,12 +11,14 @@
       },
       "size": {
         "title": "Tank size",
-        "description": "Enter the capacity, or width, length and height (rectangular tank). A typed capacity wins.",
+        "description": "Enter the capacity, or the dimensions for the shape: width x length x height (rectangular) or diameter x height (circular). A typed capacity wins.",
         "data": {
           "capacity": "Capacity (L)",
-          "width": "Width (cm)",
-          "length": "Length (cm)",
-          "height": "Height (cm)"
+          "width": "Width (cm) - rectangular tank",
+          "length": "Length (cm) - rectangular tank",
+          "height": "Height (cm)",
+          "shape": "Shape",
+          "diameter": "Diameter (cm) - circular tank"
         }
       },
       "sensors": {
@@ -25,12 +27,16 @@
         "data": {
           "level_entity": "Level sensor (% or volume)",
           "inlet_entity": "Inlet meter (optional)",
-          "outlet_entity": "Outlet meter (optional)"
+          "outlet_entity": "Outlet meter (optional)",
+          "rain_entity": "Cumulative rain gauge (optional)",
+          "catchment_area": "Catchment area (m²)",
+          "efficiency": "Collection efficiency (%)"
         }
       }
     },
     "error": {
-      "capacity_required": "Enter a capacity, or width, length and height."
+      "capacity_required": "Enter a capacity, or width, length and height.",
+      "area_required": "Enter the roof catchment area."
     }
   },
   "options": {
@@ -44,12 +50,14 @@
       },
       "size": {
         "title": "Tank size",
-        "description": "Enter the capacity, or width, length and height (rectangular tank). A typed capacity wins.",
+        "description": "Enter the capacity, or the dimensions for the shape: width x length x height (rectangular) or diameter x height (circular). A typed capacity wins.",
         "data": {
           "capacity": "Capacity (L)",
-          "width": "Width (cm)",
-          "length": "Length (cm)",
-          "height": "Height (cm)"
+          "width": "Width (cm) - rectangular tank",
+          "length": "Length (cm) - rectangular tank",
+          "height": "Height (cm)",
+          "shape": "Shape",
+          "diameter": "Diameter (cm) - circular tank"
         }
       },
       "sensors": {
@@ -58,12 +66,16 @@
         "data": {
           "level_entity": "Level sensor (% or volume)",
           "inlet_entity": "Inlet meter (optional)",
-          "outlet_entity": "Outlet meter (optional)"
+          "outlet_entity": "Outlet meter (optional)",
+          "rain_entity": "Cumulative rain gauge (optional)",
+          "catchment_area": "Catchment area (m²)",
+          "efficiency": "Collection efficiency (%)"
         }
       }
     },
     "error": {
-      "capacity_required": "Enter a capacity, or width, length and height."
+      "capacity_required": "Enter a capacity, or width, length and height.",
+      "area_required": "Enter the roof catchment area."
     }
   },
   "entity": {
@@ -82,6 +94,18 @@
       },
       "water_out": {
         "name": "Water out"
+      },
+      "water_in_estimated": {
+        "name": "Water in (estimated)"
+      },
+      "rain_in": {
+        "name": "Rainwater collected (estimated)"
+      },
+      "overflow": {
+        "name": "Overflow (estimated)"
+      },
+      "rain_efficiency": {
+        "name": "Learned collection efficiency"
       }
     },
     "number": {

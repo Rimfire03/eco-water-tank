@@ -11,12 +11,14 @@
       },
       "size": {
         "title": "Taille de la cuve",
-        "description": "Saisis la capacité, ou largeur, longueur et hauteur (cuve rectangulaire). La capacité saisie prime.",
+        "description": "Saisis la capacité, ou les dimensions selon la forme : largeur × longueur × hauteur (rectangulaire) ou diamètre × hauteur (circulaire). La capacité saisie prime.",
         "data": {
           "capacity": "Capacité (L)",
-          "width": "Largeur (cm)",
-          "length": "Longueur (cm)",
-          "height": "Hauteur (cm)"
+          "width": "Largeur (cm) - cuve rectangulaire",
+          "length": "Longueur (cm) - cuve rectangulaire",
+          "height": "Hauteur (cm)",
+          "shape": "Forme",
+          "diameter": "Diamètre (cm) - cuve circulaire"
         }
       },
       "sensors": {
@@ -25,12 +27,16 @@
         "data": {
           "level_entity": "Capteur de niveau (% ou volume)",
           "inlet_entity": "Compteur d'entrée (facultatif)",
-          "outlet_entity": "Compteur de sortie (facultatif)"
+          "outlet_entity": "Compteur de sortie (facultatif)",
+          "rain_entity": "Pluviomètre cumulatif (facultatif)",
+          "catchment_area": "Surface de collecte (m²)",
+          "efficiency": "Rendement de collecte (%)"
         }
       }
     },
     "error": {
-      "capacity_required": "Saisis une capacité, ou largeur, longueur et hauteur."
+      "capacity_required": "Saisis une capacité, ou largeur, longueur et hauteur.",
+      "area_required": "Saisis la surface de collecte du toit."
     }
   },
   "options": {
@@ -44,12 +50,14 @@
       },
       "size": {
         "title": "Taille de la cuve",
-        "description": "Saisis la capacité, ou largeur, longueur et hauteur (cuve rectangulaire). La capacité saisie prime.",
+        "description": "Saisis la capacité, ou les dimensions selon la forme : largeur × longueur × hauteur (rectangulaire) ou diamètre × hauteur (circulaire). La capacité saisie prime.",
         "data": {
           "capacity": "Capacité (L)",
-          "width": "Largeur (cm)",
-          "length": "Longueur (cm)",
-          "height": "Hauteur (cm)"
+          "width": "Largeur (cm) - cuve rectangulaire",
+          "length": "Longueur (cm) - cuve rectangulaire",
+          "height": "Hauteur (cm)",
+          "shape": "Forme",
+          "diameter": "Diamètre (cm) - cuve circulaire"
         }
       },
       "sensors": {
@@ -58,12 +66,16 @@
         "data": {
           "level_entity": "Capteur de niveau (% ou volume)",
           "inlet_entity": "Compteur d'entrée (facultatif)",
-          "outlet_entity": "Compteur de sortie (facultatif)"
+          "outlet_entity": "Compteur de sortie (facultatif)",
+          "rain_entity": "Pluviomètre cumulatif (facultatif)",
+          "catchment_area": "Surface de collecte (m²)",
+          "efficiency": "Rendement de collecte (%)"
         }
       }
     },
     "error": {
-      "capacity_required": "Saisis une capacité, ou largeur, longueur et hauteur."
+      "capacity_required": "Saisis une capacité, ou largeur, longueur et hauteur.",
+      "area_required": "Saisis la surface de collecte du toit."
     }
   },
   "entity": {
@@ -82,6 +94,18 @@
       },
       "water_out": {
         "name": "Eau sortie"
+      },
+      "water_in_estimated": {
+        "name": "Eau entrée estimée"
+      },
+      "rain_in": {
+        "name": "Eau de pluie estimée"
+      },
+      "overflow": {
+        "name": "Débordement estimé"
+      },
+      "rain_efficiency": {
+        "name": "Rendement de collecte appris"
       }
     },
     "number": {

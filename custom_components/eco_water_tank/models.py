@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from typing import NamedTuple
 
 CUSTOM = "custom"
@@ -14,6 +15,20 @@ class TankModelSpec(NamedTuple):
     @property
     def label(self) -> str:
         return f"Plasteau ECOCITER {self.liters} L ({self.reference})"
+
+
+SHAPE_RECT = "rectangular"
+SHAPE_ROUND = "circular"
+
+
+def custom_liters(shape, width=None, length=None, diameter=None, height=None) -> float | None:
+    """Volume in litres of a custom tank from its dimensions (cm), None if incomplete."""
+    if shape == SHAPE_ROUND:
+        if diameter and height:
+            return round(math.pi * (diameter / 2) ** 2 * height / 1000, 1)
+    elif width and length and height:
+        return box_liters(width, length, height)
+    return None
 
 
 def box_liters(width_cm: float, length_cm: float, height_cm: float) -> float:

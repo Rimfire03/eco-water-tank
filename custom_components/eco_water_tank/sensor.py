@@ -14,7 +14,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import PERCENTAGE, EntityCategory, UnitOfVolume
+from homeassistant.const import PERCENTAGE, EntityCategory, UnitOfLength, UnitOfVolume
 from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers.device_registry import DeviceInfo
@@ -24,22 +24,28 @@ from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.start import async_at_started
 from homeassistant.helpers.storage import Store
-from homeassistant.util.unit_conversion import VolumeConverter
+from homeassistant.util.unit_conversion import DistanceConverter, VolumeConverter
 
 from .const import (
+    CONF_AREA,
     CONF_CAPACITY,
+    CONF_DIAMETER,
+    CONF_EFFICIENCY,
     CONF_HEIGHT,
     CONF_INLET,
     CONF_LENGTH,
     CONF_LEVEL,
     CONF_MODEL,
     CONF_OUTLET,
+    CONF_RAIN,
+    CONF_SHAPE,
     CONF_WIDTH,
     DOMAIN,
 )
 from .history import import_history
 from .learner import Learner
 from .models import CUSTOM, MODELS
+from .rain import RainTracker
 from .share import build, refusal
 from .tracker import InflowTracker
 
@@ -61,6 +67,19 @@ def _liters(hass: HomeAssistant, entity_id: str, capacity: float | None) -> floa
     try:
         return VolumeConverter.convert(value, unit, UnitOfVolume.LITERS)
     except HomeAssistantError:
+        return None
+
+
+def _mm(hass: HomeAssistant, entity_id: str) -> float | None:
+    """Cumulative rain gauge reading in mm."""
+    state = hass.states.get(entity_id)
+    if state is None:
+        return None
+    try:
+        return DistanceConverter.convert(
+            float(state.state), state.attributes.get("unit_of_measurement"), UnitOfLength.MILLIMETERS
+        )
+    except (ValueError, HomeAssistantError):
         return None
 
 
@@ -95,13 +114,29 @@ class TankModel:
         self.history_done = bool((data or {}).get("history_done"))
         self.last_share = float((data or {}).get("last_share", 0))
         self.entry: ConfigEntry | None = None  # set by async_setup_entry
+        self.rain: RainTracker | None = None
+        self.rain_entity: str | None = None
+        self.intake_tracker: InflowTracker | None = None  # set by DerivedInflow
 
     def persisted(self) -> dict:
         return {
             **self.learner.as_dict(),
             "history_done": self.history_done,
             "last_share": self.last_share,
+            **({"rain": self.rain.as_dict()} if self.rain else {}),
         }
+
+    @callback
+    def on_rain(self, _: Event) -> None:
+        mm = _mm(self.hass, self.rain_entity)
+        if mm is None:
+            return
+        if self.inlet:
+            intake = _liters(self.hass, self.inlet, None)
+        else:
+            intake = self.intake_tracker.total if self.intake_tracker else None
+        self.rain.update(mm, intake, self.percent())
+        self.store.async_delay_save(self.persisted, 60)
 
     async def share(self) -> dict:
         """Notify a pre-filled GitHub issue link + the settings (custom tanks, rate limited)."""
@@ -115,7 +150,7 @@ class TankModel:
         payload = {
             "name": self.entry.title,
             "capacity": cfg[CONF_CAPACITY],
-            **{k: cfg[k] for k in (CONF_WIDTH, CONF_LENGTH, CONF_HEIGHT) if cfg.get(k)},
+            **{k: cfg[k] for k in (CONF_SHAPE, CONF_WIDTH, CONF_LENGTH, CONF_DIAMETER, CONF_HEIGHT) if cfg.get(k)},
             "curve": self.learner.curve(),
             "samples": self.learner.samples(),
         }
@@ -222,6 +257,13 @@ async def async_setup_entry(
                 ),
             )
         )
+    rain_id = cfg.get(CONF_RAIN)
+    if rain_id:
+        model.rain = RainTracker(
+            float(cfg[CONF_AREA]), float(cfg.get(CONF_EFFICIENCY, 85)) / 100, (data or {}).get("rain")
+        )
+        model.rain_entity = rain_id
+        entry.async_on_unload(async_track_state_change_event(hass, [rain_id], model.on_rain))
     meters = [m for m in (inlet, outlet) if m]
     entry.async_on_unload(
         async_track_state_change_event(hass, [level, *meters], model.on_change)
@@ -253,6 +295,15 @@ async def async_setup_entry(
         entities.append(
             TankSensor(entry, "water_out", [outlet], lambda: _liters(hass, outlet, None), **total)
         )
+    if rain_id:
+        entities += [
+            TankSensor(entry, "rain_in", [rain_id], lambda: model.rain.total, estimated=True, **total),
+            TankSensor(entry, "overflow", [rain_id], lambda: model.rain.overflow, estimated=True, **total),
+            TankSensor(entry, "rain_efficiency", [rain_id],
+                       lambda: round(model.rain.efficiency() * 100, 1), unit=PERCENTAGE,
+                       state_class=SensorStateClass.MEASUREMENT, precision=0,
+                       category=EntityCategory.DIAGNOSTIC),
+        ]
     async_add_entities(entities)
 
 
@@ -272,6 +323,7 @@ class TankSensor(SensorEntity):
         device_class: SensorDeviceClass | None = None,
         precision: int | None = None,
         category: EntityCategory | None = None,
+        estimated: bool = False,
     ) -> None:
         self._sources = sources
         self._compute = compute
@@ -282,6 +334,8 @@ class TankSensor(SensorEntity):
         self._attr_device_class = device_class
         self._attr_suggested_display_precision = precision
         self._attr_entity_category = category
+        if estimated:
+            self._attr_extra_state_attributes = {"estimated": True}
         self._attr_device_info = device_info(entry)
         self._signal = refresh_signal(entry.entry_id)
 
@@ -306,7 +360,10 @@ class DerivedInflow(TankSensor, RestoreEntity):
         self._tracker = InflowTracker(threshold=capacity * 0.01)
         self._volume = model.volume
         sources = [level] + ([outlet] if outlet else [])
-        super().__init__(entry, "water_in", sources, self._derive, **kw)
+        model.intake_tracker = self._tracker
+        super().__init__(
+            entry, "water_in_estimated", sources, self._derive, estimated=True, **kw
+        )
 
     def _derive(self) -> float:
         vol = self._volume()

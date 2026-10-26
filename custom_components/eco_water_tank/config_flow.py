@@ -13,26 +13,32 @@ from homeassistant.core import callback
 from homeassistant.helpers import selector
 
 from .const import (
+    CONF_AREA,
     CONF_CAPACITY,
+    CONF_DIAMETER,
+    CONF_EFFICIENCY,
     CONF_HEIGHT,
     CONF_INLET,
     CONF_LENGTH,
     CONF_LEVEL,
     CONF_MODEL,
     CONF_OUTLET,
+    CONF_RAIN,
+    CONF_SHAPE,
     CONF_WIDTH,
     DOMAIN,
 )
-from .models import CUSTOM, MODELS, box_liters
+from .models import CUSTOM, MODELS, SHAPE_RECT, SHAPE_ROUND, custom_liters
 
-DIMS = (CONF_WIDTH, CONF_LENGTH, CONF_HEIGHT)
+DIMS = (CONF_WIDTH, CONF_LENGTH, CONF_DIAMETER, CONF_HEIGHT)
 
 
-def _box(d: dict[str, Any]) -> float | None:
-    """Litres of the typed width x length x height, if all three are set."""
-    if all(d.get(k) for k in DIMS):
-        return box_liters(*(d[k] for k in DIMS))
-    return None
+def _volume(d: dict[str, Any]) -> float | None:
+    """Litres from the typed shape and dimensions, if complete."""
+    return custom_liters(
+        d.get(CONF_SHAPE, SHAPE_RECT), d.get(CONF_WIDTH), d.get(CONF_LENGTH),
+        d.get(CONF_DIAMETER), d.get(CONF_HEIGHT),
+    )
 
 
 def _entity(device_class: SensorDeviceClass | None = None) -> selector.EntitySelector:
@@ -67,9 +73,16 @@ def _model_schema(d: dict[str, Any], with_name: bool) -> vol.Schema:
 
 
 def _size_schema(d: dict[str, Any]) -> vol.Schema:
-    capacity = None if d.get(CONF_CAPACITY) == _box(d) else d.get(CONF_CAPACITY)
+    capacity = None if d.get(CONF_CAPACITY) == _volume(d) else d.get(CONF_CAPACITY)
+    shapes = [
+        selector.SelectOptionDict(value=SHAPE_RECT, label="Rectangular / Rectangulaire"),
+        selector.SelectOptionDict(value=SHAPE_ROUND, label="Circular / Circulaire"),
+    ]
     return vol.Schema(
         {
+            vol.Required(CONF_SHAPE, default=d.get(CONF_SHAPE, SHAPE_RECT)): selector.SelectSelector(
+                selector.SelectSelectorConfig(options=shapes, mode=selector.SelectSelectorMode.DROPDOWN)
+            ),
             vol.Optional(
                 CONF_CAPACITY, description={"suggested_value": capacity} if capacity else {}
             ): _number(10_000_000, "L"),
@@ -87,6 +100,17 @@ def _sensors_schema(d: dict[str, Any]) -> vol.Schema:
             ),
             vol.Optional(CONF_OUTLET, description=_suggest(d, CONF_OUTLET)): _entity(
                 SensorDeviceClass.WATER
+            ),
+            vol.Optional(CONF_RAIN, description=_suggest(d, CONF_RAIN)): _entity(
+                SensorDeviceClass.PRECIPITATION
+            ),
+            vol.Optional(CONF_AREA, description=_suggest(d, CONF_AREA)): _number(1_000_000, "m²"),
+            vol.Optional(
+                CONF_EFFICIENCY, default=d.get(CONF_EFFICIENCY, 85)
+            ): selector.NumberSelector(
+                selector.NumberSelectorConfig(
+                    min=10, max=100, mode=selector.NumberSelectorMode.BOX, unit_of_measurement="%"
+                )
             ),
         }
     )
@@ -112,18 +136,18 @@ class _Steps:
             return await self.async_step_size()
         # known model: its volume is used, no size to type
         self._data[CONF_CAPACITY] = model.liters
-        for k in DIMS:
+        for k in (CONF_SHAPE, *DIMS):
             self._data.pop(k, None)
         return await self.async_step_sensors()
 
     async def async_step_size(self, user_input: dict[str, Any] | None = None):
         errors: dict[str, str] = {}
         if user_input is not None:
-            capacity = user_input.get(CONF_CAPACITY) or _box(user_input)
+            capacity = user_input.get(CONF_CAPACITY) or _volume(user_input)
             if capacity is None:
                 errors[CONF_CAPACITY] = "capacity_required"
             else:
-                for k in (CONF_CAPACITY, *DIMS):
+                for k in (CONF_CAPACITY, CONF_SHAPE, *DIMS):
                     self._data.pop(k, None)
                 self._data.update(user_input)
                 self._data[CONF_CAPACITY] = capacity
@@ -133,13 +157,21 @@ class _Steps:
         )
 
     async def async_step_sensors(self, user_input: dict[str, Any] | None = None):
+        errors: dict[str, str] = {}
         if user_input is not None:
-            # full replacement so an emptied optional meter is really removed
-            for k in (CONF_INLET, CONF_OUTLET):
-                self._data.pop(k, None)
-            self._data.update(user_input)
-            return await self._finish()
-        return self.async_show_form(step_id="sensors", data_schema=_sensors_schema(self._data))
+            if user_input.get(CONF_RAIN) and not user_input.get(CONF_AREA):
+                errors[CONF_AREA] = "area_required"
+            else:
+                # full replacement so an emptied optional sensor is really removed
+                for k in (CONF_INLET, CONF_OUTLET, CONF_RAIN, CONF_AREA):
+                    self._data.pop(k, None)
+                self._data.update(user_input)
+                return await self._finish()
+        return self.async_show_form(
+            step_id="sensors",
+            data_schema=_sensors_schema(user_input or self._data),
+            errors=errors,
+        )
 
 
 class EcoWaterTankFlow(_Steps, ConfigFlow, domain=DOMAIN):

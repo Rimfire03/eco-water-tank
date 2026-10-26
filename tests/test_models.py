@@ -21,7 +21,15 @@ def test_box():
     assert models.box_liters(200, 100, 150) == 3000
 
 
+def test_custom_liters():
+    assert models.custom_liters(models.SHAPE_RECT, width=200, length=100, height=150) == 3000
+    assert models.custom_liters(models.SHAPE_ROUND, diameter=100, height=100) == 785.4
+    assert models.custom_liters(models.SHAPE_ROUND, width=100, length=100, height=100) is None
+    assert models.custom_liters(models.SHAPE_RECT, diameter=100, height=100) is None
+
+
 if __name__ == "__main__":
     test_catalogue()
     test_box()
+    test_custom_liters()
     print("ok")

@@ -20,6 +20,14 @@ body:
     validations:
       required: true
   - type: input
+    id: shape
+    attributes:
+      label: Shape (rectangular or circular)
+  - type: input
+    id: diameter
+    attributes:
+      label: Diameter (cm, circular)
+  - type: input
     id: width
     attributes:
       label: Width (cm)
