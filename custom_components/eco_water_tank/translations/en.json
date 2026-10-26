@@ -144,6 +144,9 @@
       },
       "mark_empty": {
         "name": "Tank empty"
+      },
+      "apply_correction": {
+        "name": "Apply correction"
       }
     }
   },

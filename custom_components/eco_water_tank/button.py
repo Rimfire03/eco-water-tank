@@ -15,7 +15,7 @@ from .sensor import device_info
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
-    async_add_entities([ShareButton(entry), MarkButton(entry, True), MarkButton(entry, False)])
+    async_add_entities([ShareButton(entry), MarkButton(entry, True), MarkButton(entry, False), ApplyButton(entry)])
 
 
 class ShareButton(ButtonEntity):
@@ -48,3 +48,19 @@ class MarkButton(ButtonEntity):
 
     async def async_press(self) -> None:
         await self.hass.data[DOMAIN][self._entry_id].mark_level(self._full)
+
+
+class ApplyButton(ButtonEntity):
+    """Validate the typed correction (volume or %), then clear the inputs."""
+
+    _attr_has_entity_name = True
+    _attr_entity_category = EntityCategory.CONFIG
+    _attr_translation_key = "apply_correction"
+
+    def __init__(self, entry: ConfigEntry) -> None:
+        self._entry_id = entry.entry_id
+        self._attr_unique_id = f"{entry.entry_id}_apply_correction"
+        self._attr_device_info = device_info(entry)
+
+    async def async_press(self) -> None:
+        await self.hass.data[DOMAIN][self._entry_id].apply_pending()

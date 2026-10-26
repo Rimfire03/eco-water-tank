@@ -69,7 +69,7 @@ With a level sensor in litres, nothing is learned (the volume is already known).
 
 If the volume is off, tell the tank what it really holds now. Either:
 
-- the **Real volume (correction)** (L) or **Real fill (correction)** (% of capacity) config entities of the device, or
+- the **Real volume (correction)** (L) or **Real fill (correction)** (% of capacity) config entities of the device, then press **Apply correction**: the typed value is only taken on that press, then the inputs are cleared (typing one clears the other; nothing is kept across restarts), or
 - the `eco_water_tank.calibrate` action (`volume` or `percent`, plus `config_entry` when there are several tanks).
 
 The current level reading and your value become a calibration point that weighs like 5 metered samples

@@ -144,6 +144,9 @@
       },
       "mark_empty": {
         "name": "Cuve vide"
+      },
+      "apply_correction": {
+        "name": "Valider la correction"
       }
     }
   },

@@ -89,6 +89,10 @@ def refresh_signal(entry_id: str) -> str:
     return f"{DOMAIN}_refresh_{entry_id}"
 
 
+def correction_signal(entry_id: str) -> str:
+    return f"{DOMAIN}_correction_{entry_id}"
+
+
 def device_info(entry: ConfigEntry) -> DeviceInfo:
     spec = MODELS.get((entry.options or entry.data).get(CONF_MODEL))
     return DeviceInfo(
@@ -119,6 +123,7 @@ class TankModel:
         self.rain: RainTracker | None = None
         self.rain_entity: str | None = None
         self.intake_tracker: InflowTracker | None = None  # set by DerivedInflow
+        self.pending: dict[str, float | None] = {"volume": None, "percent": None}
 
     def persisted(self) -> dict:
         return {
@@ -187,6 +192,19 @@ class TankModel:
         await self.store.async_save(self.persisted())
         _LOGGER.info("History import: %s statistic rows", count)
         return count
+
+    def set_pending(self, kind: str, value: float) -> None:
+        """Typed correction, waiting for "Apply correction"; volume and % exclude each other."""
+        other = "percent" if kind == "volume" else "volume"
+        self.pending[kind], self.pending[other] = value, None
+        async_dispatcher_send(self.hass, correction_signal(self.entry_id), other)
+
+    async def apply_pending(self) -> None:
+        if all(v is None for v in self.pending.values()):
+            raise ServiceValidationError("Enter the real volume (L) or fill (%) first")
+        await self.calibrate(self.pending["volume"], self.pending["percent"])
+        self.pending = {"volume": None, "percent": None}
+        async_dispatcher_send(self.hass, correction_signal(self.entry_id), "all")
 
     async def mark_level(self, full: bool) -> None:
         """Tell the tank it is full (capacity at the current reading) or empty (0 L)."""
