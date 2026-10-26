@@ -40,6 +40,19 @@ an ESP32-CAM reads an analog meter (dials or digits) and publishes the value to 
 Use its value as the inlet or outlet meter (it must be a cumulative total with device class `water`;
 set the class and `total_increasing` on the sensor if the integration does not).
 
+### DIY level sensor
+
+Tank without a level sensor? A submersible hydrostatic level probe measures the water height from
+the pressure at the bottom. Example (not tested by the author):
+[submersible level transmitter, 1-5 m range, 24 V, IP65, analog 4-20 mA / 0-10 V / 0-5 V / 0-3.3 V or RS485](https://fr.aliexpress.com/item/1005010537193544.html).
+
+- Pick a range at least as tall as the tank (e.g. 2 m for an ECOCITER 5000 L, 1.86 m high).
+- Read it with an ESP32 + ADS1115 running ESPHome (4-20 mA through a 150 Ω shunt, or the 0-3.3 V version),
+  or with the RS485 version over Modbus, and expose the height as a sensor.
+- Turn the height into a `%` sensor (height ÷ tank height × 100) and use it as the level sensor:
+  the learned curve then corrects the shape of the tank.
+- Check the probe is a vented (gauge) type, otherwise the air pressure shifts the reading.
+
 ## Tank models
 
 Plasteau ECOCITER Habitat (catalogue Plasteau, édition 0526):
