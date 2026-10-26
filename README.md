@@ -53,6 +53,57 @@ the pressure at the bottom. Example (not tested by the author):
   the learned curve then corrects the shape of the tank.
 - Check the probe is a vented (gauge) type, otherwise the air pressure shifts the reading.
 
+<details>
+<summary>ESPHome example (Wemos D1 mini, ADC on A0)</summary>
+
+The wiring (shunt, divider, probe supply) is yours to adapt; the `multiply` factor below is the author's
+calibration and must be redone for your electronics: measure the raw value at empty and at full,
+then scale so the sensor reads 0-100 %.
+
+```yaml
+esphome:
+  name: niveau-eau-cuve
+  friendly_name: Niveau eau cuve
+
+esp8266:
+  board: d1_mini
+
+logger:
+
+api:
+  encryption:
+    key: !secret niveau_deau_cuve_api_key
+
+ota:
+  - platform: esphome
+    password: !secret niveau_deau_cuve_ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+sensor:
+  - platform: adc
+    pin: A0
+    name: "Niveau d'eau"
+    unit_of_measurement: "%"
+    update_interval: 5s
+    accuracy_decimals: 0
+    icon: mdi:propane-tank-outline
+    filters:
+      - multiply: 137          # calibration: adapt to your electronics
+      - sliding_window_moving_average:
+          window_size: 15
+          send_every: 12
+      - lambda: |-
+          // clamp between 0 and 100 %
+          if (x < 0) return 0.0f;
+          if (x > 100) return 100.0f;
+          return x;
+```
+
+</details>
+
 ## Tank models
 
 Plasteau ECOCITER Habitat (catalogue Plasteau, édition 0526):
