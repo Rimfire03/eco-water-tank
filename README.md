@@ -52,6 +52,7 @@ trained on the same history. "Water in" derived without an inlet meter has no hi
 | Volume | L (`volume_storage`) | Water in the tank |
 | Water in | L, `water`, `total_increasing` | Inlet meter, or derived: rise of volume + water drawn out |
 | Water out | L, `water`, `total_increasing` | Outlet meter, converted to L |
+| Water in / out today | L, `water`, `total_increasing` | Today's part of the totals (outlet meter, inlet meter, or the estimated water in), back to 0 at local midnight; kept across restarts the same day |
 
 ## Learning level % → litres
 

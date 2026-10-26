@@ -116,6 +116,15 @@
       },
       "rain_efficiency": {
         "name": "Learned collection efficiency"
+      },
+      "water_out_today": {
+        "name": "Water out today"
+      },
+      "water_in_today": {
+        "name": "Water in today"
+      },
+      "water_in_estimated_today": {
+        "name": "Water in today (estimated)"
       }
     },
     "number": {

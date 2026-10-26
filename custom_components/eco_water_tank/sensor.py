@@ -20,10 +20,11 @@ from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.dispatcher import async_dispatcher_connect, async_dispatcher_send
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.event import async_track_state_change_event
+from homeassistant.helpers.event import async_track_state_change_event, async_track_time_change
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.start import async_at_started
 from homeassistant.helpers.storage import Store
+from homeassistant.util import dt as dt_util
 from homeassistant.util.unit_conversion import DistanceConverter, VolumeConverter
 
 from .const import (
@@ -42,6 +43,7 @@ from .const import (
     CONF_WIDTH,
     DOMAIN,
 )
+from .daily import DailyBaseline
 from .history import import_history
 from .learner import Learner
 from .models import CUSTOM, MODELS
@@ -295,6 +297,23 @@ async def async_setup_entry(
         entities.append(
             TankSensor(entry, "water_out", [outlet], lambda: _liters(hass, outlet, None), **total)
         )
+    entities.append(
+        DailyTotal(entry, "water_out_today", [outlet], lambda: _liters(hass, outlet, None), **total)
+        if outlet
+        else None
+    )
+    if inlet:
+        entities.append(
+            DailyTotal(entry, "water_in_today", [inlet], lambda: _liters(hass, inlet, None), **total)
+        )
+    else:
+        entities.append(
+            DailyTotal(
+                entry, "water_in_estimated_today", [level, *([outlet] if outlet else [])],
+                lambda: model.intake_tracker.total, estimated=True, **total,
+            )
+        )
+    entities = [e for e in entities if e is not None]
     if rain_id:
         entities += [
             TankSensor(entry, "rain_in", [rain_id], lambda: model.rain.total, estimated=True, **total),
@@ -378,4 +397,47 @@ class DerivedInflow(TankSensor, RestoreEntity):
             self._tracker.total = float(last.state) if last else 0.0
         except ValueError:
             pass
+        await super().async_added_to_hass()
+
+
+class DailyTotal(TankSensor, RestoreEntity):
+    """Today's part of a cumulative litres total, back to 0 at local midnight."""
+
+    def __init__(self, entry, key, sources, total, **kw) -> None:
+        self._total = total
+        self._day = DailyBaseline()
+        super().__init__(entry, key, sources, self._today, **kw)
+        self._extra = dict(self._attr_extra_state_attributes or {})
+
+    def _today(self) -> float | None:
+        total = self._total()
+        if total is None:
+            return self._attr_native_value
+        day = dt_util.now().date()
+        value = self._day.today(total, day)
+        self._attr_extra_state_attributes = {
+            **self._extra, "day": day.isoformat(), "baseline": self._day.baseline
+        }
+        return value
+
+    @callback
+    def _midnight(self, _) -> None:
+        total = self._total()
+        if total is not None:
+            self._day.rollover(total, dt_util.now().date())
+            self._attr_native_value = 0.0
+            self._attr_extra_state_attributes = {
+                **self._extra, "day": self._day.day.isoformat(), "baseline": total
+            }
+            self.async_write_ha_state()
+
+    async def async_added_to_hass(self) -> None:
+        last = await self.async_get_last_state()
+        attrs = last.attributes if last else {}
+        today = dt_util.now().date()
+        if attrs.get("day") == today.isoformat() and attrs.get("baseline") is not None:
+            self._day = DailyBaseline(float(attrs["baseline"]), today)
+        self.async_on_remove(
+            async_track_time_change(self.hass, self._midnight, hour=0, minute=0, second=0)
+        )
         await super().async_added_to_hass()

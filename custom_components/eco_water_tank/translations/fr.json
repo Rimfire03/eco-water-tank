@@ -116,6 +116,15 @@
       },
       "rain_efficiency": {
         "name": "Rendement de collecte appris"
+      },
+      "water_out_today": {
+        "name": "Eau sortie aujourd'hui"
+      },
+      "water_in_today": {
+        "name": "Eau entrée aujourd'hui"
+      },
+      "water_in_estimated_today": {
+        "name": "Eau entrée estimée aujourd'hui"
       }
     },
     "number": {
