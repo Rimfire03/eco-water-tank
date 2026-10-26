@@ -51,6 +51,31 @@ def test_small_step_and_reset():
     assert r.total == 0
 
 
+def test_pending_gain_fills_between_level_steps():
+    r = rain.RainTracker(100, 1.0, cap=50)  # 1 mm = 100 L potential
+    r.update(0, 0, 10)
+    r.update(0.2, 0, 10)  # 20 L collected, level did not move yet
+    assert r.pending_gain(0) == 20
+    r.update(0.6, 0, 10)  # +40 L: capped at the level step size
+    assert r.pending_gain(0) == 50
+
+
+def test_level_step_absorbs_pending_never_decreases():
+    r = rain.RainTracker(100, 1.0, cap=50)
+    r.update(0, 0, 10)
+    r.update(0.3, 0, 10)  # 30 L pending
+    before = 0 + r.pending_gain(0)
+    after = 50 + r.pending_gain(50)  # level step of 50 L counted
+    assert after >= before and r.pending == 0
+
+
+def test_no_pending_when_full():
+    r = rain.RainTracker(100, 1.0, cap=50)
+    r.update(0, 0, 95)
+    r.update(1.0, 0, 95)
+    assert r.pending_gain(0) == 0
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_"):

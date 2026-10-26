@@ -82,7 +82,7 @@ and the **catchment area** (m², roof) in the sensors step. 1 mm on 1 m² = 1 L.
 
 | Entity | Notes |
 |---|---|
-| Water in (estimated) | Without an inlet meter: rise of the volume + water drawn out (attribute `estimated: true`) |
+| Water in (estimated) | Without an inlet meter: rise of the volume + water drawn out (attribute `estimated: true`). With a rain gauge, rain collected since the last level step is added (at most one step, 1 % of capacity), so slow rain shows up before the level moves |
 | Rainwater collected (estimated) | rain × area × efficiency, cumulative litres |
 | Overflow (estimated) | Collected rain the tank could not take while nearly full (≥ 90 %) |
 | Learned collection efficiency | Diagnostic %. Starts at the value you set (default 85 %), then learned from what the tank really gained while not nearly full |

@@ -16,7 +16,9 @@ class RainTracker:
     gained more than twice the potential (mains top-up) are ignored.
     """
 
-    def __init__(self, area_m2: float, efficiency: float, data: dict | None = None) -> None:
+    def __init__(
+        self, area_m2: float, efficiency: float, data: dict | None = None, cap: float = 0.0
+    ) -> None:
         d = data or {}
         self.area = area_m2
         self.eff0 = efficiency
@@ -25,6 +27,22 @@ class RainTracker:
         self.s_in = d.get("s_in", 0.0)
         self.s_rain = d.get("s_rain", 0.0)
         self._ref: tuple[float, float | None] | None = None
+        # Rain collected but not yet seen as a level step (the level moves by steps of `cap` litres).
+        # Shown as estimated inflow, at most `cap`: a step of >= cap always absorbs it, so the
+        # estimate never goes down.
+        self.cap = cap
+        self.pending = 0.0
+        self._pend_base: float | None = None
+
+    def _sync(self, intake_l: float) -> None:
+        if self._pend_base is not None and intake_l > self._pend_base:
+            self.pending = max(0.0, self.pending - (intake_l - self._pend_base))
+        self._pend_base = intake_l
+
+    def pending_gain(self, intake_l: float) -> float:
+        """Litres of rain probably in the tank already, below the level step size."""
+        self._sync(intake_l)
+        return min(self.pending, self.cap)
 
     def efficiency(self) -> float:
         return (self.s_in + PRIOR_L * self.eff0) / (self.s_rain + PRIOR_L)
@@ -46,6 +64,10 @@ class RainTracker:
         potential = d_rain * self.area
         collected = potential * self.efficiency()
         self.total += collected
+        if intake_l is not None:
+            self._sync(intake_l)
+        if percent is None or percent < FULL:
+            self.pending += collected
         if intake_l is not None and self._ref[1] is not None:
             d_in = max(0.0, intake_l - self._ref[1])
             if percent is not None and percent >= FULL:

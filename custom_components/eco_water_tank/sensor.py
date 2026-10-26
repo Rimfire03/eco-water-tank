@@ -128,6 +128,11 @@ class TankModel:
             **({"rain": self.rain.as_dict()} if self.rain else {}),
         }
 
+    def estimated_intake(self) -> float:
+        """Litres gained: level steps, plus rain collected since the last step."""
+        base = self.intake_tracker.total
+        return base + (self.rain.pending_gain(base) if self.rain else 0.0)
+
     @callback
     def on_rain(self, _: Event) -> None:
         mm = _mm(self.hass, self.rain_entity)
@@ -262,7 +267,8 @@ async def async_setup_entry(
     rain_id = cfg.get(CONF_RAIN)
     if rain_id:
         model.rain = RainTracker(
-            float(cfg[CONF_AREA]), float(cfg.get(CONF_EFFICIENCY, 85)) / 100, (data or {}).get("rain")
+            float(cfg[CONF_AREA]), float(cfg.get(CONF_EFFICIENCY, 85)) / 100,
+            (data or {}).get("rain"), capacity * 0.01,
         )
         model.rain_entity = rain_id
         entry.async_on_unload(async_track_state_change_event(hass, [rain_id], model.on_rain))
@@ -310,7 +316,7 @@ async def async_setup_entry(
         entities.append(
             DailyTotal(
                 entry, "water_in_estimated_today", [level, *([outlet] if outlet else [])],
-                lambda: model.intake_tracker.total, estimated=True, **total,
+                model.estimated_intake, estimated=True, **total,
             )
         )
     entities = [e for e in entities if e is not None]
@@ -378,6 +384,7 @@ class DerivedInflow(TankSensor, RestoreEntity):
         self._outlet = outlet
         self._tracker = InflowTracker(threshold=capacity * 0.01)
         self._volume = model.volume
+        self._model = model
         sources = [level] + ([outlet] if outlet else [])
         model.intake_tracker = self._tracker
         super().__init__(
@@ -387,9 +394,9 @@ class DerivedInflow(TankSensor, RestoreEntity):
     def _derive(self) -> float:
         vol = self._volume()
         out = _liters(self.hass, self._outlet, None) if self._outlet else 0.0
-        if vol is None or out is None:
-            return self._tracker.total
-        return self._tracker.update(vol, out)
+        if vol is not None and out is not None:
+            self._tracker.update(vol, out)
+        return self._model.estimated_intake()
 
     async def async_added_to_hass(self) -> None:
         last = await self.async_get_last_state()
