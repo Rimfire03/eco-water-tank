@@ -453,7 +453,8 @@ class DailyTotal(TankSensor, RestoreEntity):
         self._total = total
         self._day = DailyBaseline()
         super().__init__(entry, key, sources, self._today, **kw)
-        self._extra = dict(self._attr_extra_state_attributes or {})
+        # _attr_extra_state_attributes is annotation-only in Entity: unset until assigned
+        self._extra = dict(getattr(self, "_attr_extra_state_attributes", None) or {})
 
     def _today(self) -> float | None:
         total = self._total()
