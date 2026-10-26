@@ -134,10 +134,10 @@
     },
     "number": {
       "calibrate_volume": {
-        "name": "Real volume (correction)"
+        "name": "Correction 1: real volume (L)"
       },
       "calibrate_percent": {
-        "name": "Real fill (correction)"
+        "name": "Correction 2: real fill (%)"
       }
     },
     "button": {
@@ -151,7 +151,7 @@
         "name": "Tank empty"
       },
       "apply_correction": {
-        "name": "Apply correction"
+        "name": "Correction 3: apply"
       }
     }
   },

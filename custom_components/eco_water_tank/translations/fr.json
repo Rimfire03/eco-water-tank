@@ -134,10 +134,10 @@
     },
     "number": {
       "calibrate_volume": {
-        "name": "Volume réel (correction)"
+        "name": "Correction 1 : volume réel (L)"
       },
       "calibrate_percent": {
-        "name": "Remplissage réel (correction)"
+        "name": "Correction 2 : remplissage réel (%)"
       }
     },
     "button": {
@@ -151,7 +151,7 @@
         "name": "Cuve vide"
       },
       "apply_correction": {
-        "name": "Valider la correction"
+        "name": "Correction 3 : valider"
       }
     }
   },
