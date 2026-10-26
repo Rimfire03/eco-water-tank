@@ -14,13 +14,25 @@ from homeassistant.helpers import selector
 
 from .const import (
     CONF_CAPACITY,
+    CONF_HEIGHT,
     CONF_INLET,
+    CONF_LENGTH,
     CONF_LEVEL,
     CONF_MODEL,
     CONF_OUTLET,
+    CONF_WIDTH,
     DOMAIN,
 )
-from .models import CUSTOM, MODELS
+from .models import CUSTOM, MODELS, box_liters
+
+DIMS = (CONF_WIDTH, CONF_LENGTH, CONF_HEIGHT)
+
+
+def _box(d: dict[str, Any]) -> float | None:
+    """Litres of the typed width x length x height, if all three are set."""
+    if all(d.get(k) for k in DIMS):
+        return box_liters(*(d[k] for k in DIMS))
+    return None
 
 
 def _entity(device_class: SensorDeviceClass | None = None) -> selector.EntitySelector:
@@ -36,8 +48,10 @@ def _schema(d: dict[str, Any], with_name: bool) -> vol.Schema:
 
     model = d.get(CONF_MODEL, CUSTOM)
     capacity = d.get(CONF_CAPACITY)
-    # capacity equal to the model's volume is not an override: leave the field empty
-    if model in MODELS and capacity == MODELS[model].liters:
+    # capacity equal to the model's / the dimensions' volume is not an override: leave it empty
+    if (model in MODELS and capacity == MODELS[model].liters) or (
+        model == CUSTOM and capacity == _box(d)
+    ):
         capacity = None
 
     options = [selector.SelectOptionDict(value=k, label=m.label) for k, m in MODELS.items()]
@@ -57,6 +71,13 @@ def _schema(d: dict[str, Any], with_name: bool) -> vol.Schema:
             unit_of_measurement="L",
         )
     )
+    for key in DIMS:  # custom rectangular tank: capacity = width x length x height
+        fields[vol.Optional(key, description=suggested(key))] = selector.NumberSelector(
+            selector.NumberSelectorConfig(
+                min=1, max=100_000, mode=selector.NumberSelectorMode.BOX,
+                unit_of_measurement="cm",
+            )
+        )
     fields[vol.Required(CONF_LEVEL, description=suggested(CONF_LEVEL))] = _entity()
     fields[vol.Optional(CONF_INLET, description=suggested(CONF_INLET))] = _entity(
         SensorDeviceClass.WATER
@@ -68,13 +89,14 @@ def _schema(d: dict[str, Any], with_name: bool) -> vol.Schema:
 
 
 def _resolve_capacity(user_input: dict[str, Any], errors: dict[str, str]) -> None:
-    """Capacity = typed value, else the model's volume."""
+    """Capacity = typed value, else the model's volume, else width x length x height."""
     if user_input.get(CONF_CAPACITY) is None:
         model = MODELS.get(user_input[CONF_MODEL])
-        if model is None:
+        capacity = model.liters if model else _box(user_input)
+        if capacity is None:
             errors[CONF_CAPACITY] = "capacity_required"
             return
-        user_input[CONF_CAPACITY] = model.liters
+        user_input[CONF_CAPACITY] = capacity
 
 
 class EcoWaterTankFlow(ConfigFlow, domain=DOMAIN):

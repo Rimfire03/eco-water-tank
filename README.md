@@ -12,6 +12,7 @@ Settings → Devices & services → Add integration → **Eco Water Tank**.
 |---|---|---|
 | Tank model | yes | Catalogue below, or *Custom* |
 | Capacity (L) | only for *Custom* | Overrides the model's volume. Needed to convert % ↔ litres |
+| Width / length / height (cm) | no | *Custom* only: if capacity is empty, capacity = width × length × height (rectangular tank). For other shapes type the capacity |
 | Level sensor | yes | `%` or any volume unit (L, m³, gal…) |
 | Inlet meter | no | Cumulative water meter. If absent, water in is derived |
 | Outlet meter | no | Cumulative water meter |

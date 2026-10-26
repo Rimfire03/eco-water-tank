@@ -17,6 +17,11 @@ def test_catalogue():
     assert models.CUSTOM not in models.MODELS
 
 
+def test_box():
+    assert models.box_liters(200, 100, 150) == 3000
+
+
 if __name__ == "__main__":
     test_catalogue()
+    test_box()
     print("ok")

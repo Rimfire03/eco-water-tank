@@ -8,6 +8,9 @@
           "name": "Name",
           "model": "Tank model",
           "capacity": "Capacity (L) - leave empty to use the model's",
+          "width": "Width (cm) - custom tank",
+          "length": "Length (cm) - custom tank",
+          "height": "Height (cm) - custom tank",
           "level_entity": "Level sensor (% or volume)",
           "inlet_entity": "Inlet meter (optional)",
           "outlet_entity": "Outlet meter (optional)"
@@ -15,7 +18,7 @@
       }
     },
     "error": {
-      "capacity_required": "Enter a capacity for a custom model."
+      "capacity_required": "Enter a capacity, or width, length and height, for a custom model."
     }
   },
   "options": {
@@ -24,6 +27,9 @@
         "data": {
           "model": "Tank model",
           "capacity": "Capacity (L) - leave empty to use the model's",
+          "width": "Width (cm) - custom tank",
+          "length": "Length (cm) - custom tank",
+          "height": "Height (cm) - custom tank",
           "level_entity": "Level sensor (% or volume)",
           "inlet_entity": "Inlet meter (optional)",
           "outlet_entity": "Outlet meter (optional)"
@@ -31,7 +37,7 @@
       }
     },
     "error": {
-      "capacity_required": "Enter a capacity for a custom model."
+      "capacity_required": "Enter a capacity, or width, length and height, for a custom model."
     }
   },
   "entity": {

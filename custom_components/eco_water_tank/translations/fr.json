@@ -8,6 +8,9 @@
           "name": "Nom",
           "model": "Modèle de cuve",
           "capacity": "Capacité (L) - laisser vide pour celle du modèle",
+          "width": "Largeur (cm) - cuve personnalisée",
+          "length": "Longueur (cm) - cuve personnalisée",
+          "height": "Hauteur (cm) - cuve personnalisée",
           "level_entity": "Capteur de niveau (% ou volume)",
           "inlet_entity": "Compteur d'entrée (facultatif)",
           "outlet_entity": "Compteur de sortie (facultatif)"
@@ -15,7 +18,7 @@
       }
     },
     "error": {
-      "capacity_required": "Saisis une capacité pour un modèle personnalisé."
+      "capacity_required": "Saisis une capacité ou largeur, longueur et hauteur pour un modèle personnalisé."
     }
   },
   "options": {
@@ -24,6 +27,9 @@
         "data": {
           "model": "Modèle de cuve",
           "capacity": "Capacité (L) - laisser vide pour celle du modèle",
+          "width": "Largeur (cm) - cuve personnalisée",
+          "length": "Longueur (cm) - cuve personnalisée",
+          "height": "Hauteur (cm) - cuve personnalisée",
           "level_entity": "Capteur de niveau (% ou volume)",
           "inlet_entity": "Compteur d'entrée (facultatif)",
           "outlet_entity": "Compteur de sortie (facultatif)"
@@ -31,7 +37,7 @@
       }
     },
     "error": {
-      "capacity_required": "Saisis une capacité pour un modèle personnalisé."
+      "capacity_required": "Saisis une capacité ou largeur, longueur et hauteur pour un modèle personnalisé."
     }
   },
   "entity": {

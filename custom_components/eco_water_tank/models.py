@@ -16,6 +16,11 @@ class TankModelSpec(NamedTuple):
         return f"Plasteau ECOCITER {self.liters} L ({self.reference})"
 
 
+def box_liters(width_cm: float, length_cm: float, height_cm: float) -> float:
+    """Volume of a rectangular tank in litres (1 L = 1000 cm³)."""
+    return round(width_cm * length_cm * height_cm / 1000, 1)
+
+
 # References are spelled as in the catalogue (ET07000 / ET08000 have no "Y" there).
 MODELS: dict[str, TankModelSpec] = {
     s.reference: s
