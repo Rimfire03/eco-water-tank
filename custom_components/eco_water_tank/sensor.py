@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+import logging
 
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -17,12 +18,17 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.helpers.restore_state import RestoreEntity
+from homeassistant.helpers.start import async_at_started
 from homeassistant.helpers.storage import Store
 from homeassistant.util.unit_conversion import VolumeConverter
 
-from .const import CONF_CAPACITY, CONF_INLET, CONF_LEVEL, CONF_OUTLET, DOMAIN
+from .const import CONF_CAPACITY, CONF_INLET, CONF_LEVEL, CONF_MODEL, CONF_OUTLET, DOMAIN
+from .history import import_history
 from .learner import Learner
+from .models import MODELS
 from .tracker import InflowTracker
+
+_LOGGER = logging.getLogger(__name__)
 
 
 def _liters(hass: HomeAssistant, entity_id: str, capacity: float | None) -> float | None:
@@ -50,12 +56,33 @@ def learner_store(hass: HomeAssistant, entry_id: str) -> Store:
 class TankModel:
     """Level sensor -> % and litres. A % level sensor feeds the learned curve."""
 
-    def __init__(self, hass, level, inlet, outlet, capacity, learner, store) -> None:
+    def __init__(self, hass, entry_id, level, inlet, outlet, capacity, learner, store, data) -> None:
         self.hass = hass
+        self.entry_id = entry_id
         self.level, self.inlet, self.outlet = level, inlet, outlet
         self.capacity = capacity
         self.learner = learner
         self.store = store
+        self.history_done = bool((data or {}).get("history_done"))
+
+    def persisted(self) -> dict:
+        return {**self.learner.as_dict(), "history_done": self.history_done}
+
+    def level_is_percent(self) -> bool:
+        state = self.hass.states.get(self.level)
+        return state is not None and state.attributes.get("unit_of_measurement") == PERCENTAGE
+
+    async def run_import(self) -> int:
+        """Import past statistics + train the curve (once at startup, or on demand)."""
+        try:
+            count = await import_history(self.hass, self)
+        except Exception:  # noqa: BLE001 - history is best effort, never break setup
+            _LOGGER.exception("History import failed")
+            return 0
+        self.history_done = True
+        await self.store.async_save(self.persisted())
+        _LOGGER.info("History import: %s statistic rows", count)
+        return count
 
     def _percent_state(self) -> float | None:
         state = self.hass.states.get(self.level)
@@ -93,7 +120,7 @@ class TankModel:
         in_l = _liters(self.hass, self.inlet, None) if self.inlet else None
         out_l = _liters(self.hass, self.outlet, None) if self.outlet else None
         if self.learner.update(p, in_l, out_l):
-            self.store.async_delay_save(self.learner.as_dict, 60)
+            self.store.async_delay_save(self.persisted, 60)
 
 
 async def async_setup_entry(
@@ -106,8 +133,20 @@ async def async_setup_entry(
     outlet = cfg.get(CONF_OUTLET)
 
     store = learner_store(hass, entry.entry_id)
-    learner = Learner(capacity, bool(inlet), bool(outlet), await store.async_load())
-    model = TankModel(hass, level, inlet, outlet, capacity, learner, store)
+    data = await store.async_load()
+    learner = Learner(capacity, bool(inlet), bool(outlet), data)
+    model = TankModel(hass, entry.entry_id, level, inlet, outlet, capacity, learner, store, data)
+    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = model
+    entry.async_on_unload(lambda: hass.data[DOMAIN].pop(entry.entry_id, None))
+    if not model.history_done:
+        entry.async_on_unload(
+            async_at_started(
+                hass,
+                lambda _: entry.async_create_background_task(
+                    hass, model.run_import(), "eco_water_tank history import"
+                ),
+            )
+        )
     meters = [m for m in (inlet, outlet) if m]
     entry.async_on_unload(
         async_track_state_change_event(hass, [level, *meters], model.on_change)
@@ -168,8 +207,12 @@ class TankSensor(SensorEntity):
         self._attr_device_class = device_class
         self._attr_suggested_display_precision = precision
         self._attr_entity_category = category
+        spec = MODELS.get((entry.options or entry.data).get(CONF_MODEL))
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, entry.entry_id)}, name=entry.title
+            identifiers={(DOMAIN, entry.entry_id)},
+            name=entry.title,
+            manufacturer="Plasteau" if spec else None,
+            model=spec.label if spec else None,
         )
 
     async def async_added_to_hass(self) -> None:

@@ -34,6 +34,11 @@ class Learner:
         self.sxx: list[float] = data.get("sxx") or [0.0] * BINS
         self._ref: tuple[float, float, float] | None = None
 
+    def reset(self) -> None:
+        self.sxy = [0.0] * BINS
+        self.sxx = [0.0] * BINS
+        self._ref = None
+
     def as_dict(self) -> dict:
         return {"sxy": self.sxy, "sxx": self.sxx}
 

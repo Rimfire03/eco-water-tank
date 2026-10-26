@@ -3,9 +3,23 @@
 from __future__ import annotations
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.typing import ConfigType
+
+from .const import DOMAIN
 
 PLATFORMS = ["sensor"]
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
+
+
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+    async def import_history(call: ServiceCall) -> None:
+        for model in list(hass.data.get(DOMAIN, {}).values()):
+            await model.run_import()
+
+    hass.services.async_register(DOMAIN, "import_history", import_history)
+    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

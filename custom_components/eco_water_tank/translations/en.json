@@ -3,27 +3,35 @@
     "step": {
       "user": {
         "title": "Water tank",
-        "description": "The level sensor is required. Without an inlet meter, water in is derived from the level and the outlet meter.",
+        "description": "Pick the tank model (its capacity is used) or \"Custom\" with a capacity. The level sensor is required. Without an inlet meter, water in is derived from the level and the outlet meter. History of the existing sensors is imported at startup.",
         "data": {
           "name": "Name",
-          "capacity": "Tank capacity (L)",
+          "model": "Tank model",
+          "capacity": "Capacity (L) - leave empty to use the model's",
           "level_entity": "Level sensor (% or volume)",
           "inlet_entity": "Inlet meter (optional)",
           "outlet_entity": "Outlet meter (optional)"
         }
       }
+    },
+    "error": {
+      "capacity_required": "Enter a capacity for a custom model."
     }
   },
   "options": {
     "step": {
       "init": {
         "data": {
-          "capacity": "Tank capacity (L)",
+          "model": "Tank model",
+          "capacity": "Capacity (L) - leave empty to use the model's",
           "level_entity": "Level sensor (% or volume)",
           "inlet_entity": "Inlet meter (optional)",
           "outlet_entity": "Outlet meter (optional)"
         }
       }
+    },
+    "error": {
+      "capacity_required": "Enter a capacity for a custom model."
     }
   },
   "entity": {
@@ -33,6 +41,12 @@
       "capacity": {"name": "Learned capacity"},
       "water_in": {"name": "Water in"},
       "water_out": {"name": "Water out"}
+    }
+  },
+  "services": {
+    "import_history": {
+      "name": "Import history",
+      "description": "Re-import the source sensors' statistics into the tank and relearn the level to litres curve."
     }
   }
 }

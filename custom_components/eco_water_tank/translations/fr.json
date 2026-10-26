@@ -3,27 +3,35 @@
     "step": {
       "user": {
         "title": "Réservoir d'eau",
-        "description": "Le capteur de niveau est obligatoire. Sans compteur d'entrée, l'eau entrée est déduite du niveau et du compteur de sortie.",
+        "description": "Choisis le modèle de cuve (sa capacité est reprise) ou « Personnalisée » avec une capacité. Le capteur de niveau est obligatoire. Sans compteur d'entrée, l'eau entrée est déduite du niveau et du compteur de sortie. L'historique des capteurs existants est importé au démarrage.",
         "data": {
           "name": "Nom",
-          "capacity": "Capacité de la cuve (L)",
+          "model": "Modèle de cuve",
+          "capacity": "Capacité (L) - laisser vide pour celle du modèle",
           "level_entity": "Capteur de niveau (% ou volume)",
           "inlet_entity": "Compteur d'entrée (facultatif)",
           "outlet_entity": "Compteur de sortie (facultatif)"
         }
       }
+    },
+    "error": {
+      "capacity_required": "Saisis une capacité pour un modèle personnalisé."
     }
   },
   "options": {
     "step": {
       "init": {
         "data": {
-          "capacity": "Capacité de la cuve (L)",
+          "model": "Modèle de cuve",
+          "capacity": "Capacité (L) - laisser vide pour celle du modèle",
           "level_entity": "Capteur de niveau (% ou volume)",
           "inlet_entity": "Compteur d'entrée (facultatif)",
           "outlet_entity": "Compteur de sortie (facultatif)"
         }
       }
+    },
+    "error": {
+      "capacity_required": "Saisis une capacité pour un modèle personnalisé."
     }
   },
   "entity": {
@@ -33,6 +41,12 @@
       "capacity": {"name": "Capacité apprise"},
       "water_in": {"name": "Eau entrée"},
       "water_out": {"name": "Eau sortie"}
+    }
+  },
+  "services": {
+    "import_history": {
+      "name": "Importer l'historique",
+      "description": "Réimporte les statistiques des capteurs source dans la cuve et réapprend la courbe niveau → litres."
     }
   }
 }

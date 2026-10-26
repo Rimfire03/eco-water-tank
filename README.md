@@ -10,10 +10,37 @@ Settings → Devices & services → Add integration → **Eco Water Tank**.
 
 | Field | Required | Notes |
 |---|---|---|
-| Capacity (L) | yes | Needed to convert % ↔ litres |
+| Tank model | yes | Catalogue below, or *Custom* |
+| Capacity (L) | only for *Custom* | Overrides the model's volume. Needed to convert % ↔ litres |
 | Level sensor | yes | `%` or any volume unit (L, m³, gal…) |
 | Inlet meter | no | Cumulative water meter. If absent, water in is derived |
 | Outlet meter | no | Cumulative water meter |
+
+## Tank models
+
+Plasteau ECOCITER Habitat (catalogue Plasteau, édition 0526):
+
+| Volume | Reference |
+|---|---|
+| 1000 L | ETY01000 |
+| 1500 L | ETY01500 |
+| 2000 L | ETY02000 |
+| 3000 L | ETY03000 |
+| 4000 L | ETY04000 |
+| 5000 L | ETY05000 |
+| 6000 L | ETY06000 |
+| 7000 L | ET07000 |
+| 8000 L | ET08000 |
+| 10000 L | ETM10000 |
+
+References are spelled as printed in the catalogue. Add a model in `models.py`.
+
+## History import
+
+At first startup (and with the `eco_water_tank.import_history` action) the long-term statistics
+of the level sensor and meters are copied to the tank sensors, so the Energy dashboard and graphs
+show the past: level %, volume, water in / out (meter totals). The level % → litres curve is
+trained on the same history. "Water in" derived without an inlet meter has no history.
 
 ## Entities
 
