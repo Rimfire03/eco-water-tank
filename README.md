@@ -1,8 +1,21 @@
 # Eco Water Tank
 
+[![GitHub release](https://img.shields.io/github/v/release/Rimfire03/eco-water-tank?include_prereleases)](https://github.com/Rimfire03/eco-water-tank/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Donate-orange.svg?logo=buy-me-a-coffee&logoColor=white)](https://buymeacoffee.com/slide598b)
 
 Home Assistant custom integration (HACS): model a water tank, a bit like the battery storage of the Energy dashboard.
+
+---
+
+## ☕ Support / Soutenir le projet
+
+If you find this integration helpful, consider buying me a coffee to support the development!  
+*Si vous appréciez cette intégration, vous pouvez m'offrir un café pour soutenir le développement !*
+
+<a href="https://buymeacoffee.com/slide598b" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 50px !important;width: 217px !important;" ></a>
+
+---
 
 ## Setup
 
@@ -123,9 +136,3 @@ Without an outlet meter either, only level rises are counted (draws are invisibl
 Semantic versioning. To release: bump `version` in `custom_components/eco_water_tank/manifest.json`,
 commit, then push the matching tag (`git tag vX.Y.Z && git push origin vX.Y.Z`).
 The Release workflow checks tag = manifest version and publishes the GitHub release; HACS offers it as an update.
-
-## Support
-
-If you find it useful, you can support the project:
-
-<a href="https://buymeacoffee.com/slide598b" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="50"></a>
