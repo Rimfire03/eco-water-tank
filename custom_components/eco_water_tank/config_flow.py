@@ -28,7 +28,7 @@ from .const import (
     CONF_WIDTH,
     DOMAIN,
 )
-from .models import CUSTOM, MODELS, SHAPE_RECT, SHAPE_ROUND, custom_liters
+from .models import CUSTOM, MODELS, SHAPE_FREE, SHAPE_RECT, SHAPE_ROUND, custom_liters
 
 DIMS = (CONF_WIDTH, CONF_LENGTH, CONF_DIAMETER, CONF_HEIGHT)
 
@@ -76,6 +76,7 @@ def _size_schema(d: dict[str, Any]) -> vol.Schema:
     shapes = [
         selector.SelectOptionDict(value=SHAPE_RECT, label="Rectangular / Rectangulaire"),
         selector.SelectOptionDict(value=SHAPE_ROUND, label="Circular / Circulaire"),
+        selector.SelectOptionDict(value=SHAPE_FREE, label="Freeform / Forme libre"),
     ]
     return vol.Schema(
         {
@@ -147,6 +148,9 @@ class _Steps:
         for k in (CONF_SHAPE, *DIMS):
             self._data.pop(k, None)
         self._data.update(user_input)
+        if user_input[CONF_SHAPE] == SHAPE_FREE:  # no formula: dimensions are not used
+            for k in DIMS:
+                self._data.pop(k, None)
         return await self.async_step_capacity()
 
     async def async_step_capacity(self, user_input: dict[str, Any] | None = None):

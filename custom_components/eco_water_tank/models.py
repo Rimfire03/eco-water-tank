@@ -19,6 +19,7 @@ class TankModelSpec(NamedTuple):
 
 SHAPE_RECT = "rectangular"
 SHAPE_ROUND = "circular"
+SHAPE_FREE = "freeform"  # neither: capacity is typed, the learned curve captures the shape
 
 
 def custom_liters(shape, width=None, length=None, diameter=None, height=None) -> float | None:
@@ -26,7 +27,7 @@ def custom_liters(shape, width=None, length=None, diameter=None, height=None) ->
     if shape == SHAPE_ROUND:
         if diameter and height:
             return round(math.pi * (diameter / 2) ** 2 * height / 1000, 1)
-    elif width and length and height:
+    elif shape == SHAPE_RECT and width and length and height:
         return box_liters(width, length, height)
     return None
 

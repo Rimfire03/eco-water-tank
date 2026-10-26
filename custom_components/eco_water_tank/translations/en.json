@@ -11,7 +11,7 @@
       },
       "size": {
         "title": "Tank size",
-        "description": "Enter the shape and dimensions (rectangular: width x length x height, circular: diameter x height). The capacity is computed on the next step; leave empty to type it directly.",
+        "description": "Enter the shape and dimensions (rectangular: width x length x height, circular: diameter x height). \"Freeform\" (neither square nor round): no dimensions, you type the capacity; the learned curve follows the real shape. The capacity is entered on the next step.",
         "data": {
           "width": "Width (cm) - rectangular tank",
           "length": "Length (cm) - rectangular tank",
@@ -55,7 +55,7 @@
       },
       "size": {
         "title": "Tank size",
-        "description": "Enter the shape and dimensions (rectangular: width x length x height, circular: diameter x height). The capacity is computed on the next step; leave empty to type it directly.",
+        "description": "Enter the shape and dimensions (rectangular: width x length x height, circular: diameter x height). \"Freeform\" (neither square nor round): no dimensions, you type the capacity; the learned curve follows the real shape. The capacity is entered on the next step.",
         "data": {
           "width": "Width (cm) - rectangular tank",
           "length": "Length (cm) - rectangular tank",

@@ -26,6 +26,7 @@ def test_custom_liters():
     assert models.custom_liters(models.SHAPE_ROUND, diameter=100, height=100) == 785.4
     assert models.custom_liters(models.SHAPE_ROUND, width=100, length=100, height=100) is None
     assert models.custom_liters(models.SHAPE_RECT, diameter=100, height=100) is None
+    assert models.custom_liters(models.SHAPE_FREE, width=100, length=100, height=100) is None
 
 
 if __name__ == "__main__":

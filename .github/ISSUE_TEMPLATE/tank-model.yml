@@ -22,7 +22,7 @@ body:
   - type: input
     id: shape
     attributes:
-      label: Shape (rectangular or circular)
+      label: Shape (rectangular, circular or freeform)
   - type: input
     id: diameter
     attributes:

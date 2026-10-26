@@ -11,7 +11,7 @@
       },
       "size": {
         "title": "Taille de la cuve",
-        "description": "Saisis la forme et les dimensions (rectangulaire : largeur × longueur × hauteur, circulaire : diamètre × hauteur). La capacité sera calculée à l'étape suivante ; laisse vide pour la saisir directement.",
+        "description": "Saisis la forme et les dimensions (rectangulaire : largeur × longueur × hauteur, circulaire : diamètre × hauteur). « Forme libre » (ni carrée ni ronde) : pas de dimensions, tu saisis la capacité ; la courbe apprise suit la forme réelle. La capacité est saisie à l'étape suivante.",
         "data": {
           "width": "Largeur (cm) - cuve rectangulaire",
           "length": "Longueur (cm) - cuve rectangulaire",
@@ -55,7 +55,7 @@
       },
       "size": {
         "title": "Taille de la cuve",
-        "description": "Saisis la forme et les dimensions (rectangulaire : largeur × longueur × hauteur, circulaire : diamètre × hauteur). La capacité sera calculée à l'étape suivante ; laisse vide pour la saisir directement.",
+        "description": "Saisis la forme et les dimensions (rectangulaire : largeur × longueur × hauteur, circulaire : diamètre × hauteur). « Forme libre » (ni carrée ni ronde) : pas de dimensions, tu saisis la capacité ; la courbe apprise suit la forme réelle. La capacité est saisie à l'étape suivante.",
         "data": {
           "width": "Largeur (cm) - cuve rectangulaire",
           "length": "Longueur (cm) - cuve rectangulaire",
