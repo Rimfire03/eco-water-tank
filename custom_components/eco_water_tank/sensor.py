@@ -13,8 +13,9 @@ from homeassistant.components.sensor import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import PERCENTAGE, EntityCategory, UnitOfVolume
 from homeassistant.core import Event, HomeAssistant, callback
-from homeassistant.exceptions import HomeAssistantError
+from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers.dispatcher import async_dispatcher_connect, async_dispatcher_send
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.helpers.restore_state import RestoreEntity
@@ -47,6 +48,20 @@ def _liters(hass: HomeAssistant, entity_id: str, capacity: float | None) -> floa
         return VolumeConverter.convert(value, unit, UnitOfVolume.LITERS)
     except HomeAssistantError:
         return None
+
+
+def refresh_signal(entry_id: str) -> str:
+    return f"{DOMAIN}_refresh_{entry_id}"
+
+
+def device_info(entry: ConfigEntry) -> DeviceInfo:
+    spec = MODELS.get((entry.options or entry.data).get(CONF_MODEL))
+    return DeviceInfo(
+        identifiers={(DOMAIN, entry.entry_id)},
+        name=entry.title,
+        manufacturer="Plasteau" if spec else None,
+        model=spec.label if spec else None,
+    )
 
 
 def learner_store(hass: HomeAssistant, entry_id: str) -> Store:
@@ -83,6 +98,18 @@ class TankModel:
         await self.store.async_save(self.persisted())
         _LOGGER.info("History import: %s statistic rows", count)
         return count
+
+    async def calibrate(self, volume: float | None, percent: float | None) -> None:
+        """Teach the curve a manual truth: the tank holds `volume` L (or `percent` % of capacity) now."""
+        if (volume is None) == (percent is None):
+            raise ServiceValidationError("Give either a volume (L) or a fill percentage")
+        p = self._percent_state()
+        if p is None or p <= 0:
+            raise ServiceValidationError("Calibration needs a level sensor in % reading above 0")
+        liters = volume if volume is not None else percent / 100 * self.capacity
+        self.learner.calibrate(p, liters)
+        await self.store.async_save(self.persisted())
+        async_dispatcher_send(self.hass, refresh_signal(self.entry_id))
 
     def _percent_state(self) -> float | None:
         state = self.hass.states.get(self.level)
@@ -207,22 +234,18 @@ class TankSensor(SensorEntity):
         self._attr_device_class = device_class
         self._attr_suggested_display_precision = precision
         self._attr_entity_category = category
-        spec = MODELS.get((entry.options or entry.data).get(CONF_MODEL))
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, entry.entry_id)},
-            name=entry.title,
-            manufacturer="Plasteau" if spec else None,
-            model=spec.label if spec else None,
-        )
+        self._attr_device_info = device_info(entry)
+        self._signal = refresh_signal(entry.entry_id)
 
     async def async_added_to_hass(self) -> None:
         self.async_on_remove(
             async_track_state_change_event(self.hass, self._sources, self._changed)
         )
+        self.async_on_remove(async_dispatcher_connect(self.hass, self._signal, self._changed))
         self._attr_native_value = self._compute()
 
     @callback
-    def _changed(self, _: Event) -> None:
+    def _changed(self, _: Event | None = None) -> None:
         self._attr_native_value = self._compute()
         self.async_write_ha_state()
 

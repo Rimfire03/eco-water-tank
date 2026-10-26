@@ -53,6 +53,20 @@ def test_meter_reset_skipped():
     assert lr.update(40, None, 0) is False
 
 
+def test_calibrate_pulls_curve():
+    lr = learner.Learner(1000, False, False)  # no meter: calibration is the only data
+    lr.calibrate(50, 600)  # prior says 500 L at 50 %
+    assert 550 < lr.volume(50) < 600
+    assert lr.volume(100) > 1000  # bins above 50 % untouched, below raised
+
+
+def test_calibrate_repeated_converges():
+    lr = learner.Learner(1000, False, False)
+    for _ in range(10):
+        lr.calibrate(80, 1600)
+    assert abs(lr.volume(80) - 1600) < 60
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_"):

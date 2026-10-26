@@ -83,12 +83,38 @@
       "water_out": {
         "name": "Water out"
       }
+    },
+    "number": {
+      "calibrate_volume": {
+        "name": "Real volume (correction)"
+      },
+      "calibrate_percent": {
+        "name": "Real fill (correction)"
+      }
     }
   },
   "services": {
     "import_history": {
       "name": "Import history",
       "description": "Re-import the source sensors' statistics into the tank and relearn the level to litres curve."
+    },
+    "calibrate": {
+      "name": "Correct volume",
+      "description": "Tell the real tank volume now (litres or fill %). The level sensor must be in %. The value is fed to the learning.",
+      "fields": {
+        "config_entry": {
+          "name": "Tank",
+          "description": "Tank to correct (optional when there is only one)."
+        },
+        "volume": {
+          "name": "Real volume",
+          "description": "Litres in the tank now."
+        },
+        "percent": {
+          "name": "Real fill",
+          "description": "Real fill of the tank, in % of its capacity."
+        }
+      }
     }
   }
 }

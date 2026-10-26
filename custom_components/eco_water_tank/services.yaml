@@ -1,1 +1,25 @@
 import_history:
+
+calibrate:
+  fields:
+    config_entry:
+      required: false
+      selector:
+        config_entry:
+          integration: eco_water_tank
+    volume:
+      required: false
+      selector:
+        number:
+          min: 0
+          max: 10000000
+          mode: box
+          unit_of_measurement: L
+    percent:
+      required: false
+      selector:
+        number:
+          min: 0
+          max: 100
+          mode: box
+          unit_of_measurement: "%"

@@ -63,6 +63,16 @@ The result is shown by the diagnostic **Learned capacity** entity and used by **
 The learned data is stored in `.storage/eco_water_tank.<entry_id>`.
 With a level sensor in litres, nothing is learned (the volume is already known).
 
+### Manual correction
+
+If the volume is off, tell the tank what it really holds now. Either:
+
+- the **Real volume (correction)** (L) or **Real fill (correction)** (% of capacity) config entities of the device, or
+- the `eco_water_tank.calibrate` action (`volume` or `percent`, plus `config_entry` when there are several tanks).
+
+The current level reading and your value become a calibration point that weighs like 5 metered samples
+in the learned curve (stored, survives restarts). Repeat at other levels to refine. Needs a level sensor in `%` above 0.
+
 ## Energy dashboard
 
 Energy → Water consumption → add **Water out** (consumption drawn from the tank).

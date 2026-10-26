@@ -83,12 +83,38 @@
       "water_out": {
         "name": "Eau sortie"
       }
+    },
+    "number": {
+      "calibrate_volume": {
+        "name": "Volume réel (correction)"
+      },
+      "calibrate_percent": {
+        "name": "Remplissage réel (correction)"
+      }
     }
   },
   "services": {
     "import_history": {
       "name": "Importer l'historique",
       "description": "Réimporte les statistiques des capteurs source dans la cuve et réapprend la courbe niveau → litres."
+    },
+    "calibrate": {
+      "name": "Corriger le volume",
+      "description": "Indique le volume réel de la cuve maintenant (en litres ou en % de remplissage). Le capteur de niveau doit être en %. La valeur est prise en compte par l'apprentissage.",
+      "fields": {
+        "config_entry": {
+          "name": "Cuve",
+          "description": "Cuve à corriger (facultatif s'il n'y en a qu'une)."
+        },
+        "volume": {
+          "name": "Volume réel",
+          "description": "Litres dans la cuve maintenant."
+        },
+        "percent": {
+          "name": "Remplissage réel",
+          "description": "Remplissage réel de la cuve, en % de sa capacité."
+        }
+      }
     }
   }
 }

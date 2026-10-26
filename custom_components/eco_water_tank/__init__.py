@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
+import voluptuous as vol
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
 
 from .const import DOMAIN
 
-PLATFORMS = ["sensor"]
+PLATFORMS = ["sensor", "number"]
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 
@@ -18,7 +21,28 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         for model in list(hass.data.get(DOMAIN, {}).values()):
             await model.run_import()
 
+    async def calibrate(call: ServiceCall) -> None:
+        models = hass.data.get(DOMAIN, {})
+        model = models.get(call.data.get("config_entry")) or (
+            next(iter(models.values())) if len(models) == 1 else None
+        )
+        if model is None:
+            raise ServiceValidationError("Select the tank (config_entry)")
+        await model.calibrate(call.data.get("volume"), call.data.get("percent"))
+
     hass.services.async_register(DOMAIN, "import_history", import_history)
+    hass.services.async_register(
+        DOMAIN,
+        "calibrate",
+        calibrate,
+        schema=vol.Schema(
+            {
+                vol.Optional("config_entry"): cv.string,
+                vol.Optional("volume"): vol.Coerce(float),
+                vol.Optional("percent"): vol.Coerce(float),
+            }
+        ),
+    )
     return True
 
 

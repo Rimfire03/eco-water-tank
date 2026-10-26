@@ -5,6 +5,7 @@ from __future__ import annotations
 BINS = 10
 WIDTH = 100 / BINS
 PRIOR = 20.0  # pseudo-observation, in % units: weight of the entered capacity
+CAL_WEIGHT = 5.0  # a manual calibration counts like this many metered samples
 
 
 class Learner:
@@ -33,6 +34,15 @@ class Learner:
         self.sxy: list[float] = data.get("sxy") or [0.0] * BINS
         self.sxx: list[float] = data.get("sxx") or [0.0] * BINS
         self._ref: tuple[float, float, float] | None = None
+
+    def calibrate(self, percent: float, liters: float, weight: float = CAL_WEIGHT) -> None:
+        """Manual truth: the tank holds `liters` at `percent`. Counts as `weight` samples 0 -> percent."""
+        p = min(percent, 100.0)
+        for i in range(BINS):
+            overlap = min(p, (i + 1) * WIDTH) - i * WIDTH
+            if overlap > 0:
+                self.sxx[i] += weight * overlap
+                self.sxy[i] += weight * liters * overlap / p
 
     def reset(self) -> None:
         self.sxy = [0.0] * BINS
