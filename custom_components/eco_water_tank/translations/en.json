@@ -3,14 +3,26 @@
     "step": {
       "user": {
         "title": "Water tank",
-        "description": "Pick the tank model (its capacity is used) or \"Custom\" with a capacity. The level sensor is required. Without an inlet meter, water in is derived from the level and the outlet meter. History of the existing sensors is imported at startup.",
+        "description": "Pick the tank model: its volume is known, nothing else to enter. \"Custom\" asks for the size on the next step.",
         "data": {
           "name": "Name",
-          "model": "Tank model",
-          "capacity": "Capacity (L) - leave empty to use the model's",
-          "width": "Width (cm) - custom tank",
-          "length": "Length (cm) - custom tank",
-          "height": "Height (cm) - custom tank",
+          "model": "Tank model"
+        }
+      },
+      "size": {
+        "title": "Tank size",
+        "description": "Enter the capacity, or width, length and height (rectangular tank). A typed capacity wins.",
+        "data": {
+          "capacity": "Capacity (L)",
+          "width": "Width (cm)",
+          "length": "Length (cm)",
+          "height": "Height (cm)"
+        }
+      },
+      "sensors": {
+        "title": "Sensors",
+        "description": "The level sensor is required. Without an inlet meter, water in is derived from the level and the outlet meter. History of the existing sensors is imported at startup.",
+        "data": {
           "level_entity": "Level sensor (% or volume)",
           "inlet_entity": "Inlet meter (optional)",
           "outlet_entity": "Outlet meter (optional)"
@@ -18,18 +30,32 @@
       }
     },
     "error": {
-      "capacity_required": "Enter a capacity, or width, length and height, for a custom model."
+      "capacity_required": "Enter a capacity, or width, length and height."
     }
   },
   "options": {
     "step": {
       "init": {
+        "title": "Water tank",
+        "description": "Pick the tank model: its volume is known, nothing else to enter. \"Custom\" asks for the size on the next step.",
         "data": {
-          "model": "Tank model",
-          "capacity": "Capacity (L) - leave empty to use the model's",
-          "width": "Width (cm) - custom tank",
-          "length": "Length (cm) - custom tank",
-          "height": "Height (cm) - custom tank",
+          "model": "Tank model"
+        }
+      },
+      "size": {
+        "title": "Tank size",
+        "description": "Enter the capacity, or width, length and height (rectangular tank). A typed capacity wins.",
+        "data": {
+          "capacity": "Capacity (L)",
+          "width": "Width (cm)",
+          "length": "Length (cm)",
+          "height": "Height (cm)"
+        }
+      },
+      "sensors": {
+        "title": "Sensors",
+        "description": "The level sensor is required. Without an inlet meter, water in is derived from the level and the outlet meter. History of the existing sensors is imported at startup.",
+        "data": {
           "level_entity": "Level sensor (% or volume)",
           "inlet_entity": "Inlet meter (optional)",
           "outlet_entity": "Outlet meter (optional)"
@@ -37,16 +63,26 @@
       }
     },
     "error": {
-      "capacity_required": "Enter a capacity, or width, length and height, for a custom model."
+      "capacity_required": "Enter a capacity, or width, length and height."
     }
   },
   "entity": {
     "sensor": {
-      "level": {"name": "Level"},
-      "volume": {"name": "Volume"},
-      "capacity": {"name": "Learned capacity"},
-      "water_in": {"name": "Water in"},
-      "water_out": {"name": "Water out"}
+      "level": {
+        "name": "Level"
+      },
+      "volume": {
+        "name": "Volume"
+      },
+      "capacity": {
+        "name": "Learned capacity"
+      },
+      "water_in": {
+        "name": "Water in"
+      },
+      "water_out": {
+        "name": "Water out"
+      }
     }
   },
   "services": {

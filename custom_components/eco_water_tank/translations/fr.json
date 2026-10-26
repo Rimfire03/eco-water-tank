@@ -3,14 +3,26 @@
     "step": {
       "user": {
         "title": "Réservoir d'eau",
-        "description": "Choisis le modèle de cuve (sa capacité est reprise) ou « Personnalisée » avec une capacité. Le capteur de niveau est obligatoire. Sans compteur d'entrée, l'eau entrée est déduite du niveau et du compteur de sortie. L'historique des capteurs existants est importé au démarrage.",
+        "description": "Choisis le modèle de cuve : son volume est connu, rien d'autre à saisir. « Personnalisée » demande la taille à l'étape suivante.",
         "data": {
           "name": "Nom",
-          "model": "Modèle de cuve",
-          "capacity": "Capacité (L) - laisser vide pour celle du modèle",
-          "width": "Largeur (cm) - cuve personnalisée",
-          "length": "Longueur (cm) - cuve personnalisée",
-          "height": "Hauteur (cm) - cuve personnalisée",
+          "model": "Modèle de cuve"
+        }
+      },
+      "size": {
+        "title": "Taille de la cuve",
+        "description": "Saisis la capacité, ou largeur, longueur et hauteur (cuve rectangulaire). La capacité saisie prime.",
+        "data": {
+          "capacity": "Capacité (L)",
+          "width": "Largeur (cm)",
+          "length": "Longueur (cm)",
+          "height": "Hauteur (cm)"
+        }
+      },
+      "sensors": {
+        "title": "Capteurs",
+        "description": "Le capteur de niveau est obligatoire. Sans compteur d'entrée, l'eau entrée est déduite du niveau et du compteur de sortie. L'historique des capteurs existants est importé au démarrage.",
+        "data": {
           "level_entity": "Capteur de niveau (% ou volume)",
           "inlet_entity": "Compteur d'entrée (facultatif)",
           "outlet_entity": "Compteur de sortie (facultatif)"
@@ -18,18 +30,32 @@
       }
     },
     "error": {
-      "capacity_required": "Saisis une capacité ou largeur, longueur et hauteur pour un modèle personnalisé."
+      "capacity_required": "Saisis une capacité, ou largeur, longueur et hauteur."
     }
   },
   "options": {
     "step": {
       "init": {
+        "title": "Réservoir d'eau",
+        "description": "Choisis le modèle de cuve : son volume est connu, rien d'autre à saisir. « Personnalisée » demande la taille à l'étape suivante.",
         "data": {
-          "model": "Modèle de cuve",
-          "capacity": "Capacité (L) - laisser vide pour celle du modèle",
-          "width": "Largeur (cm) - cuve personnalisée",
-          "length": "Longueur (cm) - cuve personnalisée",
-          "height": "Hauteur (cm) - cuve personnalisée",
+          "model": "Modèle de cuve"
+        }
+      },
+      "size": {
+        "title": "Taille de la cuve",
+        "description": "Saisis la capacité, ou largeur, longueur et hauteur (cuve rectangulaire). La capacité saisie prime.",
+        "data": {
+          "capacity": "Capacité (L)",
+          "width": "Largeur (cm)",
+          "length": "Longueur (cm)",
+          "height": "Hauteur (cm)"
+        }
+      },
+      "sensors": {
+        "title": "Capteurs",
+        "description": "Le capteur de niveau est obligatoire. Sans compteur d'entrée, l'eau entrée est déduite du niveau et du compteur de sortie. L'historique des capteurs existants est importé au démarrage.",
+        "data": {
           "level_entity": "Capteur de niveau (% ou volume)",
           "inlet_entity": "Compteur d'entrée (facultatif)",
           "outlet_entity": "Compteur de sortie (facultatif)"
@@ -37,16 +63,26 @@
       }
     },
     "error": {
-      "capacity_required": "Saisis une capacité ou largeur, longueur et hauteur pour un modèle personnalisé."
+      "capacity_required": "Saisis une capacité, ou largeur, longueur et hauteur."
     }
   },
   "entity": {
     "sensor": {
-      "level": {"name": "Niveau"},
-      "volume": {"name": "Volume"},
-      "capacity": {"name": "Capacité apprise"},
-      "water_in": {"name": "Eau entrée"},
-      "water_out": {"name": "Eau sortie"}
+      "level": {
+        "name": "Niveau"
+      },
+      "volume": {
+        "name": "Volume"
+      },
+      "capacity": {
+        "name": "Capacité apprise"
+      },
+      "water_in": {
+        "name": "Eau entrée"
+      },
+      "water_out": {
+        "name": "Eau sortie"
+      }
     }
   },
   "services": {
