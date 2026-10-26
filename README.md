@@ -50,6 +50,7 @@ trained on the same history. "Water in" derived without an inlet meter has no hi
 |---|---|---|
 | Level | % | Tank fill |
 | Volume | L (`volume_storage`) | Water in the tank |
+| Usable volume | L (`volume_storage`) | Only with a **pumping limit** (L the pump can never draw): volume − limit, never below 0. The *Tank empty* button then means "at the pumping limit" (calibrates the limit, not 0 L) |
 | Water in | L, `water`, `total_increasing` | Inlet meter, or derived: rise of volume + water drawn out |
 | Water out | L, `water`, `total_increasing` | Outlet meter, converted to L |
 | Water in / out today | L, `water`, `total_increasing` | Today's part of the totals (outlet meter, inlet meter, or the estimated water in), back to 0 at local midnight; kept across restarts the same day |

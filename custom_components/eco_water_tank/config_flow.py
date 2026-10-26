@@ -23,6 +23,7 @@ from .const import (
     CONF_LEVEL,
     CONF_MODEL,
     CONF_OUTLET,
+    CONF_PUMP_LIMIT,
     CONF_RAIN,
     CONF_SHAPE,
     CONF_WIDTH,
@@ -103,6 +104,9 @@ def _sensors_schema(d: dict[str, Any]) -> vol.Schema:
             vol.Optional(CONF_OUTLET, description=_suggest(d, CONF_OUTLET)): _entity(
                 SensorDeviceClass.WATER
             ),
+            vol.Optional(CONF_PUMP_LIMIT, description=_suggest(d, CONF_PUMP_LIMIT)): _number(
+                10_000_000, "L"
+            ),
             vol.Optional(CONF_RAIN, description=_suggest(d, CONF_RAIN)): _entity(
                 SensorDeviceClass.PRECIPITATION
             ),
@@ -168,7 +172,7 @@ class _Steps:
                 errors[CONF_AREA] = "area_required"
             else:
                 # full replacement so an emptied optional sensor is really removed
-                for k in (CONF_INLET, CONF_OUTLET, CONF_RAIN, CONF_AREA):
+                for k in (CONF_INLET, CONF_OUTLET, CONF_PUMP_LIMIT, CONF_RAIN, CONF_AREA):
                     self._data.pop(k, None)
                 self._data.update(user_input)
                 return await self._finish()

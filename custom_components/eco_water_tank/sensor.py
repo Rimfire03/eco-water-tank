@@ -38,6 +38,7 @@ from .const import (
     CONF_LEVEL,
     CONF_MODEL,
     CONF_OUTLET,
+    CONF_PUMP_LIMIT,
     CONF_RAIN,
     CONF_SHAPE,
     CONF_WIDTH,
@@ -123,6 +124,7 @@ class TankModel:
         self.rain: RainTracker | None = None
         self.rain_entity: str | None = None
         self.intake_tracker: InflowTracker | None = None  # set by DerivedInflow
+        self.pump_limit = 0.0  # L the pump can never draw (set by async_setup_entry)
         self.pending: dict[str, float | None] = {"volume": None, "percent": None}
 
     def persisted(self) -> dict:
@@ -207,11 +209,11 @@ class TankModel:
         async_dispatcher_send(self.hass, correction_signal(self.entry_id), "all")
 
     async def mark_level(self, full: bool) -> None:
-        """Tell the tank it is full (capacity at the current reading) or empty (0 L)."""
+        """Tell the tank it is full (capacity at the current reading) or empty (pump limit, else 0 L)."""
         p = self._percent_state()
         if p is not None and p <= 0 and not full:
             return  # already reads empty: curve is consistent, nothing to learn
-        await self.calibrate(self.capacity if full else 0.0, None)
+        await self.calibrate(self.capacity if full else self.pump_limit, None)
         if full and self.rain:
             self.rain.pending = 0.0  # nothing left to arrive: the tank is full
 
@@ -280,6 +282,7 @@ async def async_setup_entry(
     learner = Learner(capacity, bool(inlet), bool(outlet), data)
     model = TankModel(hass, entry.entry_id, level, inlet, outlet, capacity, learner, store, data)
     model.entry = entry
+    model.pump_limit = float(cfg.get(CONF_PUMP_LIMIT) or 0)
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = model
     entry.async_on_unload(lambda: hass.data[DOMAIN].pop(entry.entry_id, None))
     if not model.history_done:
@@ -320,6 +323,15 @@ async def async_setup_entry(
                    state_class=SensorStateClass.MEASUREMENT, precision=0,
                    category=EntityCategory.DIAGNOSTIC),
     ]
+    if model.pump_limit:
+        entities.append(
+            TankSensor(
+                entry, "usable_volume", [level],
+                lambda: None if (v := model.volume()) is None else max(0.0, v - model.pump_limit),
+                unit=UnitOfVolume.LITERS, device_class=SensorDeviceClass.VOLUME_STORAGE,
+                state_class=SensorStateClass.MEASUREMENT, precision=0,
+            )
+        )
     if inlet:
         entities.append(
             TankSensor(entry, "water_in", [inlet], lambda: _liters(hass, inlet, None), **total)

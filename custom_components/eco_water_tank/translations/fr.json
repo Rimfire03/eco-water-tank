@@ -29,7 +29,8 @@
           "outlet_entity": "Compteur de sortie (facultatif)",
           "rain_entity": "Pluviomètre cumulatif (facultatif)",
           "catchment_area": "Surface de collecte (m²)",
-          "efficiency": "Rendement de collecte (%)"
+          "efficiency": "Rendement de collecte (%)",
+          "pump_limit": "Limite de pompage (L restants non pompables, facultatif)"
         }
       },
       "capacity": {
@@ -73,7 +74,8 @@
           "outlet_entity": "Compteur de sortie (facultatif)",
           "rain_entity": "Pluviomètre cumulatif (facultatif)",
           "catchment_area": "Surface de collecte (m²)",
-          "efficiency": "Rendement de collecte (%)"
+          "efficiency": "Rendement de collecte (%)",
+          "pump_limit": "Limite de pompage (L restants non pompables, facultatif)"
         }
       },
       "capacity": {
@@ -125,6 +127,9 @@
       },
       "water_in_estimated_today": {
         "name": "Eau entrée estimée aujourd'hui"
+      },
+      "usable_volume": {
+        "name": "Volume utilisable"
       }
     },
     "number": {

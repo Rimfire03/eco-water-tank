@@ -29,7 +29,8 @@
           "outlet_entity": "Outlet meter (optional)",
           "rain_entity": "Cumulative rain gauge (optional)",
           "catchment_area": "Catchment area (m²)",
-          "efficiency": "Collection efficiency (%)"
+          "efficiency": "Collection efficiency (%)",
+          "pump_limit": "Pumping limit (L left that the pump cannot draw, optional)"
         }
       },
       "capacity": {
@@ -73,7 +74,8 @@
           "outlet_entity": "Outlet meter (optional)",
           "rain_entity": "Cumulative rain gauge (optional)",
           "catchment_area": "Catchment area (m²)",
-          "efficiency": "Collection efficiency (%)"
+          "efficiency": "Collection efficiency (%)",
+          "pump_limit": "Pumping limit (L left that the pump cannot draw, optional)"
         }
       },
       "capacity": {
@@ -125,6 +127,9 @@
       },
       "water_in_estimated_today": {
         "name": "Water in today (estimated)"
+      },
+      "usable_volume": {
+        "name": "Usable volume"
       }
     },
     "number": {

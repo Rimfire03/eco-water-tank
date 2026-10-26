@@ -12,6 +12,7 @@ CONF_HEIGHT = "height"
 CONF_LEVEL = "level_entity"
 CONF_INLET = "inlet_entity"
 CONF_OUTLET = "outlet_entity"
+CONF_PUMP_LIMIT = "pump_limit"  # L left in the tank when the pump can no longer draw
 CONF_RAIN = "rain_entity"  # cumulative rain gauge (mm)
 CONF_AREA = "catchment_area"  # m²
 CONF_EFFICIENCY = "efficiency"  # % of rain that reaches the tank
