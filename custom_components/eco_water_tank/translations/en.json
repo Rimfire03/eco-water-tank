@@ -91,6 +91,11 @@
       "calibrate_percent": {
         "name": "Real fill (correction)"
       }
+    },
+    "button": {
+      "share_tank": {
+        "name": "Share tank settings"
+      }
     }
   },
   "services": {
@@ -113,6 +118,16 @@
         "percent": {
           "name": "Real fill",
           "description": "Real fill of the tank, in % of its capacity."
+        }
+      }
+    },
+    "share_tank": {
+      "name": "Share settings",
+      "description": "Creates a notification with a link to a pre-filled GitHub issue (custom tank, learned curve). Nothing is sent automatically; limited to once per 24 h and only for tanks that have learned enough.",
+      "fields": {
+        "config_entry": {
+          "name": "Tank",
+          "description": "Tank to share (optional when there is only one)."
         }
       }
     }

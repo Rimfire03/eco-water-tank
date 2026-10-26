@@ -73,6 +73,16 @@ If the volume is off, tell the tank what it really holds now. Either:
 The current level reading and your value become a calibration point that weighs like 5 metered samples
 in the learned curve (stored, survives restarts). Repeat at other levels to refine. Needs a level sensor in `%` above 0.
 
+## Share your custom tank
+
+Custom tank with a well-learned curve? The **Share tank settings** button (or the `eco_water_tank.share_tank`
+action) creates a notification with a link to a pre-filled GitHub issue (capacity, dimensions, learned curve)
+so the model can join the catalogue in a next release. Nothing is sent automatically: you review and submit
+the issue yourself, with your GitHub account.
+
+Anti-spam: custom tanks only, only after enough learning (about one full fill/drain, or a calibration),
+once per 24 h per tank (kept across restarts), and the issue form requires all fields.
+
 ## Energy dashboard
 
 Energy → Water consumption → add **Water out** (consumption drawn from the tank).

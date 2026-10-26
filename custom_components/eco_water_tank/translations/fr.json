@@ -91,6 +91,11 @@
       "calibrate_percent": {
         "name": "Remplissage réel (correction)"
       }
+    },
+    "button": {
+      "share_tank": {
+        "name": "Partager les réglages de la cuve"
+      }
     }
   },
   "services": {
@@ -113,6 +118,16 @@
         "percent": {
           "name": "Remplissage réel",
           "description": "Remplissage réel de la cuve, en % de sa capacité."
+        }
+      }
+    },
+    "share_tank": {
+      "name": "Partager les réglages",
+      "description": "Crée une notification avec un lien vers une demande GitHub pré-remplie (cuve personnalisée, courbe apprise). Rien n'est envoyé automatiquement ; limité à une fois par 24 h et réservé aux cuves déjà apprises.",
+      "fields": {
+        "config_entry": {
+          "name": "Cuve",
+          "description": "Cuve à partager (facultatif s'il n'y en a qu'une)."
         }
       }
     }

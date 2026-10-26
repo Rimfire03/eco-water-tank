@@ -67,6 +67,13 @@ def test_calibrate_repeated_converges():
     assert abs(lr.volume(80) - 1600) < 60
 
 
+def test_curve_and_samples():
+    lr = learner.Learner(1000, False, True)
+    assert lr.curve() == [10.0] * 10 and lr.samples() == [0.0] * 10
+    lr.calibrate(50, 600)
+    assert lr.curve()[0] > 10 and lr.curve()[9] == 10.0 and sum(lr.samples()) == 250
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_"):

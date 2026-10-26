@@ -5,14 +5,14 @@ from __future__ import annotations
 import voluptuous as vol
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.core import HomeAssistant, ServiceCall, SupportsResponse
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
 
 from .const import DOMAIN
 
-PLATFORMS = ["sensor", "number"]
+PLATFORMS = ["sensor", "number", "button"]
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 
@@ -22,15 +22,28 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
             await model.run_import()
 
     async def calibrate(call: ServiceCall) -> None:
+        await pick(call).calibrate(call.data.get("volume"), call.data.get("percent"))
+
+    def pick(call: ServiceCall):
         models = hass.data.get(DOMAIN, {})
         model = models.get(call.data.get("config_entry")) or (
             next(iter(models.values())) if len(models) == 1 else None
         )
         if model is None:
             raise ServiceValidationError("Select the tank (config_entry)")
-        await model.calibrate(call.data.get("volume"), call.data.get("percent"))
+        return model
+
+    async def share_tank(call: ServiceCall) -> dict:
+        return await pick(call).share()
 
     hass.services.async_register(DOMAIN, "import_history", import_history)
+    hass.services.async_register(
+        DOMAIN,
+        "share_tank",
+        share_tank,
+        schema=vol.Schema({vol.Optional("config_entry"): cv.string}),
+        supports_response=SupportsResponse.OPTIONAL,
+    )
     hass.services.async_register(
         DOMAIN,
         "calibrate",

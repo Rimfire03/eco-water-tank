@@ -4,6 +4,9 @@ from __future__ import annotations
 
 from collections.abc import Callable
 import logging
+import time
+
+from homeassistant.components import persistent_notification
 
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -23,10 +26,21 @@ from homeassistant.helpers.start import async_at_started
 from homeassistant.helpers.storage import Store
 from homeassistant.util.unit_conversion import VolumeConverter
 
-from .const import CONF_CAPACITY, CONF_INLET, CONF_LEVEL, CONF_MODEL, CONF_OUTLET, DOMAIN
+from .const import (
+    CONF_CAPACITY,
+    CONF_HEIGHT,
+    CONF_INLET,
+    CONF_LENGTH,
+    CONF_LEVEL,
+    CONF_MODEL,
+    CONF_OUTLET,
+    CONF_WIDTH,
+    DOMAIN,
+)
 from .history import import_history
 from .learner import Learner
-from .models import MODELS
+from .models import CUSTOM, MODELS
+from .share import build, refusal
 from .tracker import InflowTracker
 
 _LOGGER = logging.getLogger(__name__)
@@ -79,9 +93,42 @@ class TankModel:
         self.learner = learner
         self.store = store
         self.history_done = bool((data or {}).get("history_done"))
+        self.last_share = float((data or {}).get("last_share", 0))
+        self.entry: ConfigEntry | None = None  # set by async_setup_entry
 
     def persisted(self) -> dict:
-        return {**self.learner.as_dict(), "history_done": self.history_done}
+        return {
+            **self.learner.as_dict(),
+            "history_done": self.history_done,
+            "last_share": self.last_share,
+        }
+
+    async def share(self) -> dict:
+        """Notify a pre-filled GitHub issue link + the settings (custom tanks, rate limited)."""
+        cfg = self.entry.options or self.entry.data
+        if cfg.get(CONF_MODEL, CUSTOM) != CUSTOM:
+            raise ServiceValidationError("Only custom tanks can be shared")
+        now = time.time()
+        reason = refusal(now, self.last_share, sum(self.learner.sxx))
+        if reason:
+            raise ServiceValidationError(reason)
+        payload = {
+            "name": self.entry.title,
+            "capacity": cfg[CONF_CAPACITY],
+            **{k: cfg[k] for k in (CONF_WIDTH, CONF_LENGTH, CONF_HEIGHT) if cfg.get(k)},
+            "curve": self.learner.curve(),
+            "samples": self.learner.samples(),
+        }
+        url, text = build(payload)
+        self.last_share = now  # before the await: concurrent presses hit the cooldown
+        await self.store.async_save(self.persisted())
+        persistent_notification.async_create(
+            self.hass,
+            f"[Open a pre-filled GitHub issue]({url})\n\nOr copy these settings:\n\n```json\n{text}\n```",
+            title="Eco Water Tank: share your tank",
+            notification_id=f"{DOMAIN}_share_{self.entry_id}",
+        )
+        return payload
 
     def level_is_percent(self) -> bool:
         state = self.hass.states.get(self.level)
@@ -163,6 +210,7 @@ async def async_setup_entry(
     data = await store.async_load()
     learner = Learner(capacity, bool(inlet), bool(outlet), data)
     model = TankModel(hass, entry.entry_id, level, inlet, outlet, capacity, learner, store, data)
+    model.entry = entry
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = model
     entry.async_on_unload(lambda: hass.data[DOMAIN].pop(entry.entry_id, None))
     if not model.history_done:

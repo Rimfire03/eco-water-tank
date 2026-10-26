@@ -55,6 +55,14 @@ class Learner:
     def _k(self, i: int) -> float:
         return (self.sxy[i] + self.k0 * PRIOR) / (self.sxx[i] + PRIOR)
 
+    def curve(self) -> list[float]:
+        """Litres per % in each 10 % bin, bottom to top."""
+        return [round(self._k(i), 2) for i in range(BINS)]
+
+    def samples(self) -> list[float]:
+        """% units learned per bin (0 = still the linear default)."""
+        return [round(x, 1) for x in self.sxx]
+
     def volume(self, percent: float) -> float:
         p = min(max(percent, 0.0), 100.0)
         return sum(self._k(i) * max(0.0, min(p, (i + 1) * WIDTH) - i * WIDTH) for i in range(BINS))

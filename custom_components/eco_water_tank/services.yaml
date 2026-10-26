@@ -23,3 +23,11 @@ calibrate:
           max: 100
           mode: box
           unit_of_measurement: "%"
+
+share_tank:
+  fields:
+    config_entry:
+      required: false
+      selector:
+        config_entry:
+          integration: eco_water_tank
