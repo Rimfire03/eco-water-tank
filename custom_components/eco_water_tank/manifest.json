@@ -3,11 +3,11 @@
   "name": "Eco Water Tank",
   "codeowners": ["@Rimfire03"],
   "config_flow": true,
-  "dependencies": ["recorder"],
+  "dependencies": ["recorder", "websocket_api"],
   "documentation": "https://github.com/Rimfire03/eco-water-tank",
   "integration_type": "service",
   "iot_class": "calculated",
   "issue_tracker": "https://github.com/Rimfire03/eco-water-tank/issues",
   "requirements": [],
-  "version": "0.4.5"
+  "version": "0.4.6"
 }
