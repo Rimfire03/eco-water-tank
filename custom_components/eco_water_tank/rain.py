@@ -4,7 +4,7 @@ from __future__ import annotations
 
 PRIOR_L = 500.0  # weight (potential litres) of the configured efficiency
 MIN_MM = 0.2  # smallest rain step worth a sample (gauge tick)
-FULL = 90.0  # % above which a tank overflows instead of storing
+FULL = 100.0  # % at which a tank overflows instead of storing
 
 
 class RainTracker:

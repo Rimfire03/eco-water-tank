@@ -29,8 +29,8 @@ def test_learns_efficiency():
 
 def test_overflow_when_full():
     r = rain.RainTracker(100, 0.8)
-    r.update(0, 0, 95)
-    r.update(1.0, 0, 95)  # tank full, gained nothing
+    r.update(0, 0, 100)
+    r.update(1.0, 0, 100)  # tank full, gained nothing
     assert abs(r.overflow - 80) < 1e-9
     assert r.s_rain == 0  # not learned from a full tank
 
@@ -71,8 +71,8 @@ def test_level_step_absorbs_pending_never_decreases():
 
 def test_no_pending_when_full():
     r = rain.RainTracker(100, 1.0, cap=50)
-    r.update(0, 0, 95)
-    r.update(1.0, 0, 95)
+    r.update(0, 0, 100)
+    r.update(1.0, 0, 100)
     assert r.pending_gain(0) == 0
 
 
