@@ -152,6 +152,12 @@
       },
       "apply_correction": {
         "name": "Correction 3: apply"
+      },
+      "undo_correction": {
+        "name": "Correction 4: undo last"
+      },
+      "reset_curve": {
+        "name": "Back to the original curve"
       }
     }
   },

@@ -229,6 +229,18 @@ class TankModel:
         await self.store.async_save(self.persisted())
         async_dispatcher_send(self.hass, refresh_signal(self.entry_id))
 
+    async def undo_correction(self) -> None:
+        if not self.learner.undo_last():
+            raise ServiceValidationError("No manual correction to undo")
+        await self.store.async_save(self.persisted())
+        async_dispatcher_send(self.hass, refresh_signal(self.entry_id))
+
+    async def reset_curve(self) -> None:
+        """Back to the original curve: linear from the capacity (known model), all learning dropped."""
+        self.learner.reset()
+        await self.store.async_save(self.persisted())
+        async_dispatcher_send(self.hass, refresh_signal(self.entry_id))
+
     def _percent_state(self) -> float | None:
         state = self.hass.states.get(self.level)
         if state is None or state.attributes.get("unit_of_measurement") != PERCENTAGE:

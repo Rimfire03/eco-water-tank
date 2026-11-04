@@ -74,6 +74,31 @@ def test_curve_and_samples():
     assert lr.curve()[0] > 10 and lr.curve()[9] == 10.0 and sum(lr.samples()) == 250
 
 
+def test_undo_last_correction():
+    lr = learner.Learner(1000, False, False)
+    base = lr.curve()
+    lr.calibrate(50, 600)
+    lr.calibrate(80, 700)
+    assert lr.undo_last() and lr.cal == [[50, 600]]
+    assert lr.undo_last() and lr.cal == []
+    assert not lr.undo_last()
+    assert all(abs(a - b) < 1e-9 for a, b in zip(lr.curve(), base))
+
+
+def test_undo_survives_save_and_load():
+    lr = learner.Learner(1000, False, False)
+    lr.calibrate(50, 600)
+    lr2 = learner.Learner(1000, False, False, lr.as_dict())
+    assert lr2.undo_last() and lr2.samples() == [0.0] * 10
+
+
+def test_reset_returns_to_linear():
+    lr = learner.Learner(1000, False, True)
+    lr.calibrate(50, 900)
+    lr.reset()
+    assert lr.curve() == [10.0] * 10 and lr.cal == []
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_"):

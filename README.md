@@ -162,6 +162,8 @@ If the volume is off, tell the tank what it really holds now. Either:
 The current level reading and your value become a calibration point that weighs like 5 metered samples
 in the learned curve (stored, survives restarts). Repeat at other levels to refine. Needs a level sensor in `%` above 0.
 
+**Correction 4: undo last** removes the latest manual correction (full/empty marks included, up to 50 kept). For a catalogue tank, **Back to the original curve** drops all learning and restores the linear curve of its volume.
+
 Quick version: the **Tank full** / **Tank empty** buttons. *Full* = the capacity at the current reading (also clears the pending rain estimate); *empty* = 0 L at the current reading (a reading above 0 when empty means a dead volume below the sensor or pump intake). Same weight as a manual correction.
 
 ## Rainwater and rain gauge

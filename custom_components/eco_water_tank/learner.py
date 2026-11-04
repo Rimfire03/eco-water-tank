@@ -5,6 +5,7 @@ from __future__ import annotations
 BINS = 10
 WIDTH = 100 / BINS
 PRIOR = 20.0  # pseudo-observation, in % units: weight of the entered capacity
+MAX_CAL = 50  # manual corrections kept for undo
 CAL_WEIGHT = 5.0  # a manual calibration counts like this many metered samples
 
 
@@ -34,23 +35,37 @@ class Learner:
         self.sxy: list[float] = data.get("sxy") or [0.0] * BINS
         self.sxx: list[float] = data.get("sxx") or [0.0] * BINS
         self._ref: tuple[float, float, float] | None = None
+        self.cal: list[list[float]] = data.get("cal") or []  # manual corrections [percent, litres], oldest first
 
-    def calibrate(self, percent: float, liters: float, weight: float = CAL_WEIGHT) -> None:
-        """Manual truth: the tank holds `liters` at `percent`. Counts as `weight` samples 0 -> percent."""
+    def _add_cal(self, percent: float, liters: float, weight: float) -> None:
         p = min(percent, 100.0)
         for i in range(BINS):
             overlap = min(p, (i + 1) * WIDTH) - i * WIDTH
             if overlap > 0:
-                self.sxx[i] += weight * overlap
-                self.sxy[i] += weight * liters * overlap / p
+                self.sxx[i] = max(0.0, self.sxx[i] + weight * overlap)
+                self.sxy[i] = max(0.0, self.sxy[i] + weight * liters * overlap / p)
+
+    def calibrate(self, percent: float, liters: float, weight: float = CAL_WEIGHT) -> None:
+        """Manual truth: the tank holds `liters` at `percent`. Counts as `weight` samples 0 -> percent."""
+        self._add_cal(percent, liters, weight)
+        self.cal = (self.cal + [[percent, liters]])[-MAX_CAL:]
+
+    def undo_last(self) -> bool:
+        """Remove the latest manual correction; False when there is none."""
+        if not self.cal:
+            return False
+        percent, liters = self.cal.pop()
+        self._add_cal(percent, liters, -CAL_WEIGHT)
+        return True
 
     def reset(self) -> None:
         self.sxy = [0.0] * BINS
         self.sxx = [0.0] * BINS
+        self.cal = []
         self._ref = None
 
     def as_dict(self) -> dict:
-        return {"sxy": self.sxy, "sxx": self.sxx}
+        return {"sxy": self.sxy, "sxx": self.sxx, "cal": self.cal}
 
     def _k(self, i: int) -> float:
         return (self.sxy[i] + self.k0 * PRIOR) / (self.sxx[i] + PRIOR)

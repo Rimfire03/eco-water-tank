@@ -8,14 +8,21 @@ from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
+from .const import CONF_MODEL, DOMAIN
+from .models import MODELS
 from .sensor import device_info
 
 
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
-    async_add_entities([ShareButton(entry), MarkButton(entry, True), MarkButton(entry, False), ApplyButton(entry)])
+    entities = [
+        ShareButton(entry), MarkButton(entry, True), MarkButton(entry, False),
+        ApplyButton(entry), ModelButton(entry, "undo_correction", "undo_correction"),
+    ]
+    if (entry.options or entry.data).get(CONF_MODEL) in MODELS:  # known tank: back to its original curve
+        entities.append(ModelButton(entry, "reset_curve", "reset_curve"))
+    async_add_entities(entities)
 
 
 class ShareButton(ButtonEntity):
@@ -64,3 +71,20 @@ class ApplyButton(ButtonEntity):
 
     async def async_press(self) -> None:
         await self.hass.data[DOMAIN][self._entry_id].apply_pending()
+
+
+class ModelButton(ButtonEntity):
+    """Button calling a TankModel coroutine (undo last correction, reset curve)."""
+
+    _attr_has_entity_name = True
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(self, entry: ConfigEntry, key: str, method: str) -> None:
+        self._entry_id = entry.entry_id
+        self._method = method
+        self._attr_unique_id = f"{entry.entry_id}_{key}"
+        self._attr_translation_key = key
+        self._attr_device_info = device_info(entry)
+
+    async def async_press(self) -> None:
+        await getattr(self.hass.data[DOMAIN][self._entry_id], self._method)()
