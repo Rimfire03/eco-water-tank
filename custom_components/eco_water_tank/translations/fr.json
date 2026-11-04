@@ -137,7 +137,7 @@
         "name": "Correction 1 : volume réel (L)"
       },
       "calibrate_percent": {
-        "name": "Correction 2 : remplissage réel (%)"
+        "name": "Correction 2 : niveau relevé (%)"
       }
     },
     "button": {
@@ -168,7 +168,7 @@
     },
     "calibrate": {
       "name": "Corriger le volume",
-      "description": "Indique le volume réel de la cuve maintenant (en litres ou en % de remplissage). Le capteur de niveau doit être en %. La valeur est prise en compte par l'apprentissage.",
+      "description": "Indique le volume réel de la cuve (en litres) mesuré quand le capteur de niveau lisait un certain % (par défaut le niveau actuel). Le capteur de niveau doit être en %. Le point est pris en compte par l'apprentissage.",
       "fields": {
         "config_entry": {
           "name": "Cuve",
@@ -176,11 +176,11 @@
         },
         "volume": {
           "name": "Volume réel",
-          "description": "Litres dans la cuve maintenant."
+          "description": "Litres dans la cuve au niveau indiqué."
         },
         "percent": {
-          "name": "Remplissage réel",
-          "description": "Remplissage réel de la cuve, en % de sa capacité."
+          "name": "Niveau relevé",
+          "description": "Niveau lu sur le capteur, en %, quand tu as mesuré le volume (par défaut : niveau actuel)."
         }
       }
     },

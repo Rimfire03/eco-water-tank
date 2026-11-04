@@ -137,7 +137,7 @@
         "name": "Correction 1: real volume (L)"
       },
       "calibrate_percent": {
-        "name": "Correction 2: real fill (%)"
+        "name": "Correction 2: level reading (%)"
       }
     },
     "button": {
@@ -168,7 +168,7 @@
     },
     "calibrate": {
       "name": "Correct volume",
-      "description": "Tell the real tank volume now (litres or fill %). The level sensor must be in %. The value is fed to the learning.",
+      "description": "Tell the real tank volume (litres) measured when the level sensor read a given % (default: the current level). The level sensor must be in %. The point is fed to the learning.",
       "fields": {
         "config_entry": {
           "name": "Tank",
@@ -176,11 +176,11 @@
         },
         "volume": {
           "name": "Real volume",
-          "description": "Litres in the tank now."
+          "description": "Litres in the tank at that level."
         },
         "percent": {
-          "name": "Real fill",
-          "description": "Real fill of the tank, in % of its capacity."
+          "name": "Level reading",
+          "description": "Level read on the sensor, in %, when you measured the volume (default: the current level)."
         }
       }
     },

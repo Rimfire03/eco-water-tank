@@ -196,14 +196,10 @@ class TankModel:
         return count
 
     def set_pending(self, kind: str, value: float) -> None:
-        """Typed correction, waiting for "Apply correction"; volume and % exclude each other."""
-        other = "percent" if kind == "volume" else "volume"
-        self.pending[kind], self.pending[other] = value, None
-        async_dispatcher_send(self.hass, correction_signal(self.entry_id), other)
+        """Typed correction, waiting for "Apply correction"."""
+        self.pending[kind] = value
 
     async def apply_pending(self) -> None:
-        if all(v is None for v in self.pending.values()):
-            raise ServiceValidationError("Enter the real volume (L) or fill (%) first")
         await self.calibrate(self.pending["volume"], self.pending["percent"])
         self.pending = {"volume": None, "percent": None}
         async_dispatcher_send(self.hass, correction_signal(self.entry_id), "all")
@@ -218,14 +214,17 @@ class TankModel:
             self.rain.pending = 0.0  # nothing left to arrive: the tank is full
 
     async def calibrate(self, volume: float | None, percent: float | None) -> None:
-        """Teach the curve a manual truth: the tank holds `volume` L (or `percent` % of capacity) now."""
-        if (volume is None) == (percent is None):
-            raise ServiceValidationError("Give either a volume (L) or a fill percentage")
-        p = self._percent_state()
-        if p is None or p <= 0:
-            raise ServiceValidationError("Calibration needs a level sensor in % reading above 0")
-        liters = volume if volume is not None else percent / 100 * self.capacity
-        self.learner.calibrate(p, liters)
+        """Teach the curve a manual point: the tank held `volume` L when the level sensor
+        read `percent` % (default: the reading now)."""
+        if volume is None:
+            raise ServiceValidationError("Enter the real volume (L) measured at that level")
+        current = self._percent_state()
+        if current is None:
+            raise ServiceValidationError("Calibration needs a level sensor in %")
+        p = current if percent is None else percent
+        if p <= 0:
+            raise ServiceValidationError("The level reading must be above 0 %")
+        self.learner.calibrate(p, volume)
         await self.store.async_save(self.persisted())
         async_dispatcher_send(self.hass, refresh_signal(self.entry_id))
 

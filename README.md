@@ -154,13 +154,14 @@ With a level sensor in litres, nothing is learned (the volume is already known).
 
 ### Manual correction
 
-If the volume is off, tell the tank what it really holds now. Either:
+If the volume is off, give the tank a real point: the volume you measured and the level the sensor read at that moment.
 
-- the config entities of the device, in order: **Correction 1: real volume (L)** or **Correction 2: real fill (%)** (% of capacity), then **Correction 3: apply**: the typed value is only taken on that press, then the inputs are cleared (typing one clears the other; nothing is kept across restarts), or
-- the `eco_water_tank.calibrate` action (`volume` or `percent`, plus `config_entry` when there are several tanks).
+- **Correction 1: real volume (L)**: the volume you measured.
+- **Correction 2: level reading (%)**: the level the sensor read when you measured. It defaults to the current level; type another % only for a level you noted earlier (the current level is then ignored).
+- **Correction 3: apply**: only then is the point taken. The inputs are cleared (nothing is kept across restarts).
 
-The current level reading and your value become a calibration point that weighs like 5 metered samples
-in the learned curve (stored, survives restarts). Repeat at other levels to refine. Needs a level sensor in `%` above 0.
+The same is available as the `eco_water_tank.calibrate` action (`volume`, optional `percent`, plus `config_entry` with several tanks).
+The point weighs like 5 metered samples in the learned curve (stored, survives restarts). Repeat at other levels to refine. Needs a level sensor in `%` and a level above 0.
 
 **Correction 4: undo last** removes the latest manual correction (full/empty marks included, up to 50 kept). For a catalogue tank, **Back to the original curve** drops all learning and restores the linear curve of its volume.
 
