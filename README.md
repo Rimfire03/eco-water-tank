@@ -19,6 +19,16 @@ If you find this integration helpful, consider buying me a coffee to support the
 
 ---
 
+## Installation
+
+Eco Water Tank is in the default HACS store:
+
+1. In Home Assistant, open **HACS**, search for **Eco Water Tank** and click **Download**.
+2. Restart Home Assistant.
+3. Continue with the setup below.
+
+Not showing up yet, or you want a manual install? Add `https://github.com/Rimfire03/eco-water-tank` in HACS as a custom repository (category **Integration**), or copy `custom_components/eco_water_tank` into your Home Assistant `custom_components` folder and restart.
+
 ## Setup
 
 Settings → Devices & services → Add integration → **Eco Water Tank**.
