@@ -151,6 +151,23 @@ trained on the same history. "Water in" derived without an inlet meter has no hi
 | Water out | L, `water`, `total_increasing` | Outlet meter, converted to L |
 | Water in / out today | L, `water`, `total_increasing` | Today's part of the totals (outlet meter, inlet meter, or the estimated water in), back to 0 at local midnight; kept across restarts the same day |
 
+## Lovelace card
+
+[**Eco Water Tank Card**](https://github.com/Rimfire03/eco-water-tank-card) shows the tank on your dashboard: a realistic cutaway of a buried tank, day and night, with the animated water level, the rain, the inlet pipe and the pump, and all the data of this integration on the picture (level, volume, usable volume, water in / out, rain collected, efficiency, overflow), a fill history chart, and the calibration buttons.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Rimfire03/eco-water-tank-card/main/docs/preview-rain.png" alt="Eco Water Tank Card" width="60%">
+</p>
+
+It is in the default HACS store: **HACS** → **Frontend** (**Dashboard**) → search **Eco Water Tank Card** → **Download**, then refresh the browser. Add the card from the picker and choose your tank, or press **Import from the integration** in the card editor (needs this integration 0.4.6 or later):
+
+```yaml
+type: custom:eco-water-tank-card
+device: <device id>
+```
+
+The card also works without this integration, with any level, volume, flow and rain sensors and many units: see its [documentation](https://github.com/Rimfire03/eco-water-tank-card#readme).
+
 ## Learning level % → litres
 
 With a `%` level sensor and at least one meter, the integration learns the real curve:
